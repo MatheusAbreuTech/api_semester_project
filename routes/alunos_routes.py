@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 alunos_blueprint = Blueprint('alunos', __name__)
 
@@ -13,3 +13,32 @@ alunos =  [
 @alunos_blueprint.route('/alunos', methods=['GET'])
 def get_alunos():
     return jsonify(alunos)
+
+@alunos_blueprint.route('/alunos/<int:id>', methods=['GET'])
+def get_aluno(id):
+    aluno = next((a for a in alunos if a ['id'] == id), None)
+    if aluno:
+        return jsonify(aluno)
+    return jsonify({"erro": "Aluno não existe."}), 404
+
+@alunos_blueprint.route('/alunos', methods=['POST'])
+def add_aluno():
+    novo_aluno = request.json
+    novo_aluno["id"] = alunos[-1]["id"] + 1 if alunos else 1
+    alunos.append(novo_aluno)
+    return jsonify(novo_aluno), 201
+
+@alunos_blueprint.route('/alunos/<int:id>', methods=['PUT'])
+def update_aluno(id):
+    aluno = next((a for a in alunos if a['id'] == id), None)
+    if aluno:
+        data = request.json
+        aluno.update(data)
+        return jsonify(aluno)
+    return jsonify({"erro": "Aluno não foi encontrado."}), 404
+
+@alunos_blueprint.route('/alunos/<int:id>', methods=['DELETE'])
+def delete_aluno(id):
+    global alunos
+    alunos = [a for a in alunos if a['id'] != id]
+    return jsonify({"mensagem": "Aluno removido."})
