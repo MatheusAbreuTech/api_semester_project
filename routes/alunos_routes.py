@@ -1,14 +1,7 @@
 from flask import Blueprint, jsonify, request
+from database.alunos import alunos
 
 alunos_blueprint = Blueprint('alunos', __name__)
-
-alunos =  [
-        {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 101},
-        {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 101},
-        {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 102},
-        {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 103},
-        {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 103}
-]
 
 def valid_data_student(data):
     required_fields = ["nome", "idade", "turma_id"]
@@ -22,6 +15,7 @@ def valid_data_student(data):
 @alunos_blueprint.route('/alunos', methods=['GET'])
 def get_alunos():
     data = alunos
+
     if data is None:
         return jsonify([])
     return jsonify(alunos)
