@@ -10,6 +10,12 @@ alunos =  [
         {"id": 5, "nome": "Gabriel Martins", "idade": 14}
 ]
 
+professores = [
+    {"id": 1, "nome": "Ana Silva", "disciplina": "Matemática"},
+    {"id": 2, "nome": "Carlos Souza", "disciplina": "História"},
+    {"id": 3, "nome": "Fernanda Costa", "disciplina": "Biologia"}
+]
+
 def valid_data_student(data):
     required_fields = ["nome", "idade", "turma_id"]
     for field in required_fields:
@@ -88,6 +94,78 @@ def delete_aluno(aluno_id):
             return jsonify({"message": "Aluno deletado com sucesso!"})
     return jsonify({"error": "aluno não encontrado"}), 404
 
+
+@app.route('/professores', methods=['GET'])
+def get_professores():
+    data = professores
+    if data is None:
+        return jsonify([])
+    return jsonify(professores)
+
+
+@app.route('/professor/<int:professor_id>', methods=['GET'])
+def get_professor(professor_id):
+    for professor in professores:
+        if professor['id'] == professor_id:
+            return jsonify({
+                'professor': professor
+            })
+
+    return jsonify({'error': 'professor nao encontrado'}), 404
+
+
+@app.route('/professor', methods=['POST'])
+def create_professor():
+    data = request.json
+    if 'nome' not in data:
+        return jsonify({'error': 'nome é um campo obrigatório'}), 400
+
+    if 'disciplina' not in data:
+        return jsonify({'error': 'disciplina é um campo obrigatório'}), 400
+
+    professor = {
+        'id': len(professores) + 1,
+        'nome': data['nome'],
+        'disciplina': data['disciplina']
+    }
+    professores.append(professor)
+    return jsonify({
+        'message': 'professor criado com sucesso',
+        'professor': professor
+    })
+
+
+@app.route('/professor/<int:professor_id>', methods=['PUT'])
+def update_professor(professor_id):
+    for professor in professores:
+        if professor['id'] == professor_id:
+            data = request.json
+            if 'nome' not in data:
+                return jsonify({'error': 'nome é um campo obrigatório'}), 400
+
+            if 'disciplina' not in data:
+                return jsonify({'error': 'disciplina é um campo obrigatório'}), 400
+
+            professor["nome"] = data['nome']
+            professor["disciplina"] = data['disciplina']
+            return jsonify({
+                'message': 'professor atualizado com sucesso',
+                'professor': professor
+            })
+
+    return jsonify({'error': 'professor nao encontrado'}), 404
+
+
+@app.route('/professor/<int:professor_id>', methods=['DELETE'])
+def delete_professor(professor_id):
+    for professor in professores:
+        if professor['id'] == professor_id:
+            professores.remove(professor)
+            return jsonify({
+                'message': 'professor removido com sucesso'
+            })
+
+    return jsonify({'error': 'professor nao encontrado'}), 404
 
 if __name__ == '__main__':
   app.run(host=app.config["HOST"], port = app.config['PORT'],debug=app.config['DEBUG'] )
