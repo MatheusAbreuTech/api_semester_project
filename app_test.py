@@ -60,6 +60,20 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "aluno não encontrado")
 
+    def test_delete_aluno_existente(self):
+        response = self.app.delete('/alunos/1')
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "Aluno deletado com sucesso!")
+        self.assertEqual(len(alunos), 1)
+
+    def test_delete_aluno_inexistente(self):
+        response = self.app.delete('/alunos/999')
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "aluno não encontrado")
 
 if __name__ == '__main__':
     unittest.main()
