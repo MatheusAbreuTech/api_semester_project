@@ -187,7 +187,6 @@ class TestAPP(unittest.TestCase):
     def test_create_turma_dados_invalidos(self):
         turma_invalida = {
             "nome": "Turma Sem Professor"
-            # Falta o campo professor
         }
         response = self.app.post('/turma', json=turma_invalida)
         self.assertEqual(response.status_code, 400)
