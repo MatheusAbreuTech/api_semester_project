@@ -195,5 +195,22 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertIn("error", data)
 
+    def test_update_turma_existente(self):
+        update_data = {"nome": "Turma X", "professor": "Novo Professor"}
+        response = self.app.put('/turma/1', json=update_data)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma atualizada com sucesso")
+        self.assertEqual(turmas[0]["professor"], "Novo Professor")
+
+    def test_update_turma_inexistente(self):
+        update_data = {"nome": "Turma Z", "professor": "Inexistente"}
+        response = self.app.put('/turma/999', json=update_data)
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "turma nao encontrado")
+
 if __name__ == '__main__':
     unittest.main()
