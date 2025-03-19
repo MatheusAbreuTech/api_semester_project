@@ -212,5 +212,20 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "turma nao encontrado")
 
+    def test_delete_turma_existente(self):
+        response = self.app.delete('/turma/1')
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma removido com sucesso")
+        self.assertEqual(len(turmas), 1)
+
+    def test_delete_turma_inexistente(self):
+        response = self.app.delete('/turma/999')
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "turma nao encontrado")
+
 if __name__ == '__main__':
     unittest.main()
