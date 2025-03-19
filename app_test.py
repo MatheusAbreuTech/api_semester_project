@@ -1,7 +1,7 @@
 import unittest
 
 from flask import json
-from app import app, alunos
+from app import app, alunos, professores
 
 
 class TestAPP(unittest.TestCase):
@@ -69,6 +69,70 @@ class TestAPP(unittest.TestCase):
 
         data = json.loads(response.data)
         self.assertEqual(data["error"], "aluno não encontrado")
+
+    def test_get_professor_existente(self):
+        response = self.app.get('/professor/1')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["professor"]["nome"], "Ana Silva")
+
+    def test_get_professor_inexistente(self):
+        response = self.app.get('/professor/999')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "professor nao encontrado")
+
+    def test_create_professor(self):
+        novo_professor = {
+            "nome": "Fernanda Costa",
+            "disciplina": "Biologia"
+        }
+        response = self.app.post('/professor', json=novo_professor)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "professor criado com sucesso")
+
+    def test_create_professor_dados_invalidos(self):
+        professor_invalido = {
+            "nome": "Sem Disciplina"
+        }
+        response = self.app.post('/professor', json=professor_invalido)
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertIn("error", data)
+
+    def test_update_professor_existente(self):
+        update_data = {"nome": "Ana Modificada", "disciplina": "Física"}
+        response = self.app.put('/professor/1', json=update_data)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "professor atualizado com sucesso")
+        self.assertEqual(professores[0]["disciplina"], "Física")
+
+    def test_update_professor_inexistente(self):
+        update_data = {"nome": "Nome Inválido", "disciplina": "Química"}
+        response = self.app.put('/professor/999', json=update_data)
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "professor nao encontrado")
+
+    def test_delete_professor_existente(self):
+        response = self.app.delete('/professor/2')
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "professor removido com sucesso")
+
+    def test_delete_professor_inexistente(self):
+        response = self.app.delete('/professor/999')
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "professor nao encontrado")
 
 if __name__ == '__main__':
     unittest.main()
