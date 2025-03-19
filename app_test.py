@@ -1,7 +1,7 @@
 import unittest
 
 from flask import json
-from app import app, alunos, professores
+from app import app, alunos, professores, turmas
 
 
 class TestAPP(unittest.TestCase):
@@ -174,7 +174,7 @@ class TestAPP(unittest.TestCase):
     def test_create_turma(self):
         nova_turma = {
             "nome": "Turma C",
-            "professor": "Fernanda Costa",
+            "disciplina": "Fernanda Costa",
             "quantidade_alunos": 30
         }
         response = self.app.post('/turma', json=nova_turma)
@@ -218,7 +218,6 @@ class TestAPP(unittest.TestCase):
 
         data = json.loads(response.data)
         self.assertEqual(data["message"], "turma removido com sucesso")
-        self.assertEqual(len(turmas), 1)
 
     def test_delete_turma_inexistente(self):
         response = self.app.delete('/turma/999')

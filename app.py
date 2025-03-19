@@ -184,7 +184,7 @@ def get_turma(turma_id):
         if turma['id'] == turma_id:
             return jsonify({
                 'turma': turma
-            })
+            }), 200
 
     return jsonify({'error': 'turma nao encontrado'}), 404
 
@@ -206,7 +206,7 @@ def create_turma():
     return jsonify({
         'message': 'turma criado com sucesso',
         'turma': turma
-    })
+    }), 200
 
 @app.route('/turma/<int:turma_id>', methods=['PUT'])
 def update_turma(turma_id):
@@ -224,7 +224,7 @@ def update_turma(turma_id):
             return jsonify({
                 'message': 'turma atualizada com sucesso',
                 'turma': turma
-            })
+            }), 200
 
     return jsonify({'error': 'turma nao encontrado'}), 404
 
