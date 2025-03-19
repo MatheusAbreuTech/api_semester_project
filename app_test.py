@@ -171,6 +171,29 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "turma nao encontrado")
 
+    def test_create_turma(self):
+        nova_turma = {
+            "nome": "Turma C",
+            "professor": "Fernanda Costa",
+            "quantidade_alunos": 30
+        }
+        response = self.app.post('/turma', json=nova_turma)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma criado com sucesso")
+
+
+    def test_create_turma_dados_invalidos(self):
+        turma_invalida = {
+            "nome": "Turma Sem Professor"
+            # Falta o campo professor
+        }
+        response = self.app.post('/turma', json=turma_invalida)
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertIn("error", data)
 
 if __name__ == '__main__':
     unittest.main()
