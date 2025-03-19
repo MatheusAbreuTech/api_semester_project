@@ -85,9 +85,9 @@ def update_aluno(aluno_id):
             return jsonify({
                 "message": "Aluno atualizado com sucesso!",
                 "alunos": alunos
-            })
+            }), 200
 
-    return jsonify({"error": "aluno não encontrado"})
+    return jsonify({"error": "aluno não encontrado"}), 404
 
 
 
