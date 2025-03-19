@@ -3,11 +3,11 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 alunos =  [
-        {"id": 1, "nome": "João Pereira", "idade": 15},
-        {"id": 2, "nome": "Mariana Lima", "idade": 14},
-        {"id": 3, "nome": "Lucas Oliveira", "idade": 16},
-        {"id": 4, "nome": "Beatriz Santos", "idade": 15},
-        {"id": 5, "nome": "Gabriel Martins", "idade": 14}
+        {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 102},
+        {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 102},
+        {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 102},
+        {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 102},
+        {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 102}
 ]
 
 professores = [
@@ -41,13 +41,12 @@ def get_alunos():
 
 @app.route('/alunos/<int:aluno_id>', methods=['GET'])
 def get_aluno(aluno_id):
-    for aluno in alunos:
-        if aluno['id'] == aluno_id:
-            return jsonify({
-                "aluno": aluno,
-            })
+    aluno = next((a for a in alunos if a['id'] == aluno_id), None)
 
-    return jsonify({"erro": "Aluno não existe."}), 404
+    if aluno:
+        return jsonify({"aluno": aluno}), 200
+
+    return jsonify({"error": "Aluno não encontrado"}), 404
 
 @app.route('/alunos', methods=['POST'])
 def create_aluno():
@@ -86,9 +85,9 @@ def update_aluno(aluno_id):
             return jsonify({
                 "message": "Aluno atualizado com sucesso!",
                 "alunos": alunos
-            })
+            }), 200
 
-    return jsonify({"error": "aluno não encontrado"})
+    return jsonify({"error": "aluno não encontrado"}), 404
 
 
 
