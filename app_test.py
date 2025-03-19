@@ -120,5 +120,19 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "professor nao encontrado")
 
+    def test_delete_professor_existente(self):
+        response = self.app.delete('/professor/2')
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "professor removido com sucesso")
+
+    def test_delete_professor_inexistente(self):
+        response = self.app.delete('/professor/999')
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "professor nao encontrado")
+
 if __name__ == '__main__':
     unittest.main()
