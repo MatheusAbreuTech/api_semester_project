@@ -9,6 +9,31 @@ class TestAPP(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
 
+        global alunos, professores, turmas
+        alunos.clear()
+        professores.clear()
+        turmas.clear()
+
+        alunos.extend([
+            {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
+            {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 1},
+            {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 2},
+            {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 2},
+            {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 3}
+        ])
+
+        professores.extend([
+            {"id": 1, "nome": "Ana Silva", "disciplina": "Matemática"},
+            {"id": 2, "nome": "Carlos Souza", "disciplina": "História"},
+            {"id": 3, "nome": "Fernanda Costa", "disciplina": "Biologia"}
+        ])
+
+        turmas.extend([
+            {"id": 1, "nome": "Turma A", "professor": "Ana Silva", "quantidade_alunos": 23},
+            {"id": 2, "nome": "Turma B", "professor": "Carlos Souza", "quantidade_alunos": 15},
+            {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", "quantidade_alunos": 30}
+        ])
+
     def test_get_alunos(self):
         response = self.app.get('/alunos')
         self.assertEqual(response.status_code, 200)
@@ -133,6 +158,74 @@ class TestAPP(unittest.TestCase):
 
         data = json.loads(response.data)
         self.assertEqual(data["error"], "professor nao encontrado")
+
+    def test_get_turma_existente(self):
+        response = self.app.get('/turma/1')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["turma"]["nome"], "Turma A")
+
+    def test_get_turma_inexistente(self):
+        response = self.app.get('/turma/999')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "turma nao encontrado")
+
+    def test_create_turma(self):
+        nova_turma = {
+            "nome": "Turma C",
+            "professor": "Fernanda Costa",
+            "quantidade_alunos": 30
+        }
+        response = self.app.post('/turma', json=nova_turma)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma criado com sucesso")
+
+
+    def test_create_turma_dados_invalidos(self):
+        turma_invalida = {
+            "nome": "Turma Sem Professor"
+            # Falta o campo professor
+        }
+        response = self.app.post('/turma', json=turma_invalida)
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertIn("error", data)
+
+    def test_update_turma_existente(self):
+        update_data = {"nome": "Turma X", "professor": "Novo Professor"}
+        response = self.app.put('/turma/1', json=update_data)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma atualizada com sucesso")
+        self.assertEqual(turmas[0]["professor"], "Novo Professor")
+
+    def test_update_turma_inexistente(self):
+        update_data = {"nome": "Turma Z", "professor": "Inexistente"}
+        response = self.app.put('/turma/999', json=update_data)
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "turma nao encontrado")
+
+    def test_delete_turma_existente(self):
+        response = self.app.delete('/turma/1')
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "turma removido com sucesso")
+        self.assertEqual(len(turmas), 1)
+
+    def test_delete_turma_inexistente(self):
+        response = self.app.delete('/turma/999')
+        self.assertEqual(response.status_code, 404)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "turma nao encontrado")
 
 if __name__ == '__main__':
     unittest.main()
