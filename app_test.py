@@ -70,5 +70,17 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "aluno não encontrado")
 
+    def test_get_professor_existente(self):
+        response = self.app.get('/professor/1')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["professor"]["nome"], "Ana Silva")
+
+    def test_get_professor_inexistente(self):
+        response = self.app.get('/professor/999')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "professor nao encontrado")
+
 if __name__ == '__main__':
     unittest.main()
