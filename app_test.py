@@ -1,7 +1,7 @@
 import unittest
 
 from flask import json
-from app import app, alunos
+from app import app, alunos, professores
 
 
 class TestAPP(unittest.TestCase):
@@ -81,6 +81,28 @@ class TestAPP(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
         self.assertEqual(data["error"], "professor nao encontrado")
+
+    def test_create_professor(self):
+        novo_professor = {
+            "nome": "Fernanda Costa",
+            "disciplina": "Biologia"
+        }
+        response = self.app.post('/professor', json=novo_professor)
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "professor criado com sucesso")
+
+    def test_create_professor_dados_invalidos(self):
+        professor_invalido = {
+            "nome": "Sem Disciplina"
+        }
+        response = self.app.post('/professor', json=professor_invalido)
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertIn("error", data)
+
 
 if __name__ == '__main__':
     unittest.main()
