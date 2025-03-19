@@ -3,11 +3,11 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 alunos =  [
-        {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 102},
-        {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 102},
-        {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 102},
-        {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 102},
-        {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 102}
+        {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
+        {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 1},
+        {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 2},
+        {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 2},
+        {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 2}
 ]
 
 professores = [
@@ -17,13 +17,13 @@ professores = [
 ]
 
 turmas = [
-    {"id": 1, "nome": "Turma A", "professor": "Ana Silva","quantidade_alunos":23},
-    {"id": 2, "nome": "Turma B", "professor": "Carlos Souza","quantidade_alunos":15},
-    {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa","quantidade_alunos":30}
+    {"id": 1, "nome": "Turma A", "professor": "Ana Silva", },
+    {"id": 2, "nome": "Turma B", "professor": "Carlos Souza", },
+    {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", }
 ]
 
 def valid_data_student(data):
-    required_fields = ["nome", "idade", "turma_id"]
+    required_fields = ["nome", "idade"]
     for field in required_fields:
         if field not in data or not data[field]:
             return False, f"O campo {field} é obrigatório."
@@ -60,13 +60,13 @@ def create_aluno():
         "id": len(alunos) + 1,
         "nome": data["nome"],
         "idade": data["idade"],
-        "turma_id": data["turma_id"]
+        "turma_id": None
     }
 
     alunos.append(aluno)
 
     return jsonify({
-        "message": "Aluno criada com sucesso!",
+        "message": "Aluno criado com sucesso!",
         "alunos": alunos
     })
 
@@ -88,8 +88,6 @@ def update_aluno(aluno_id):
             }), 200
 
     return jsonify({"error": "aluno não encontrado"}), 404
-
-
 
 @app.route('/alunos/<int:aluno_id>', methods=['DELETE'])
 def delete_aluno(aluno_id):
@@ -151,8 +149,7 @@ def update_professor(professor_id):
             if 'disciplina' not in data:
                 return jsonify({'error': 'disciplina é um campo obrigatório'}), 400
 
-            professor["nome"] = data['nome']
-            professor["disciplina"] = data['disciplina']
+            professor.update(data)
             return jsonify({
                 'message': 'professor atualizado com sucesso',
                 'professor': professor
@@ -186,7 +183,7 @@ def get_turma(turma_id):
                 'turma': turma
             }), 200
 
-    return jsonify({'error': 'turma nao encontrado'}), 404
+    return jsonify({'error': 'turma nao encontrada'}), 404
 
 @app.route('/turma', methods=['POST'])
 def create_turma():
@@ -194,19 +191,22 @@ def create_turma():
     if 'nome' not in data:
         return jsonify({'error': 'nome é um campo obrigatório'}), 400
 
-    if 'disciplina' not in data:
-        return jsonify({'error': 'disciplina é um campo obrigatório'}), 400
+    if 'id_professor' not in data:
+        return jsonify({'error': 'id_professor é um campo obrigatório'}), 400
 
-    turma = {
-        'id': len(turmas) + 1,
-        'nome': data['nome'],
-        'disciplina': data['disciplina']
-    }
-    turmas.append(turma)
-    return jsonify({
-        'message': 'turma criado com sucesso',
-        'turma': turma
-    }), 200
+    for professor in professores:
+        if professor['id'] == data['id_professor']:
+            turma = {
+                'id': len(turmas) + 1,
+                'nome': data['nome'],
+                'id_professor': data['id_professor']
+            }
+            turmas.append(turma)
+            return jsonify({
+                'message': 'turma criada com sucesso',
+                'turma': turma
+            }), 200
+    return jsonify({'error': f'professor {data['id_professor']} nao encontrado'}), 404
 
 @app.route('/turma/<int:turma_id>', methods=['PUT'])
 def update_turma(turma_id):
@@ -216,18 +216,22 @@ def update_turma(turma_id):
             if 'nome' not in data:
                 return jsonify({'error': 'nome é um campo obrigatório'}), 400
 
-            if 'professor' not in data:
-                return jsonify({'error': 'professor é um campo obrigatório'}), 400
+            if 'id_professor' not in data:
+                return jsonify({'error': 'id_professor é um campo obrigatório'}), 400
 
-            turma["nome"] = data['nome']
-            turma["professor"] = data['professor']
-            return jsonify({
-                'message': 'turma atualizada com sucesso',
-                'turma': turma
-            }), 200
-
-    return jsonify({'error': 'turma nao encontrado'}), 404
-
+            for professor in professores:
+                if professor['id'] == data['id_professor']:
+                    turma = {
+                        'nome': data['nome'],
+                        'id_professor': data['id_professor']
+                    }
+                    turma.update(turma)
+                    return jsonify({
+                        'message': 'turma atualizada com sucesso',
+                        'turma': turma
+                    }), 200
+            return jsonify({'error': f'professor {data['id_professor']} nao encontrado'}), 404
+    return jsonify({'error': 'turma nao encontrada'}), 404
 
 @app.route('/turma/<int:turma_id>', methods=['DELETE'])
 def delete_turma(turma_id):
@@ -235,10 +239,10 @@ def delete_turma(turma_id):
         if turma['id'] == turma_id:
             turmas.remove(turma)
             return jsonify({
-                'message': 'turma removido com sucesso'
+                'message': 'turma removida com sucesso'
             })
 
-    return jsonify({'error': 'turma nao encontrado'}), 404
+    return jsonify({'error': 'turma nao encontrada'}), 404
 
 @app.route('/turma/adiciona-aluno/<int:turma_id>/<int:aluno_id>', methods=['POST'])
 def cadastra_aluno_turma(turma_id, aluno_id):
@@ -249,8 +253,6 @@ def cadastra_aluno_turma(turma_id, aluno_id):
         return jsonify({'error': 'aluno nao encontrado'}), 404
     if not turma in turmas:
         return jsonify({'error': 'turma nao encontrado'}), 404
-    #    TO DO LIST
-    #    criar verificação se aluno ja esta em turma
 
     aluno["turma_id"] = turma_id
 
