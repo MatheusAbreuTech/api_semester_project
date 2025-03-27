@@ -48,22 +48,8 @@ def create_aluno():
 
 @app.route('/alunos/<int:aluno_id>', methods=['PUT'])
 def update_aluno(aluno_id):
-    for aluno in alunos:
-        if aluno['id'] == aluno_id:
-            data = request.json
-
-            valid, message = valid_data_student(data)
-            if not valid:
-                return jsonify({"erro": message}), 400
-
-            aluno.update(data)
-
-            return jsonify({
-                "message": "Aluno atualizado com sucesso!",
-                "alunos": alunos
-            }), 200
-
-    return jsonify({"error": "aluno não encontrado"}), 404
+    data = request.json
+    return alunos_model.update_aluno(aluno_id, data)
 
 @app.route('/alunos/<int:aluno_id>', methods=['DELETE'])
 def delete_aluno(aluno_id):

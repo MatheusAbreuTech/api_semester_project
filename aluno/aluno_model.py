@@ -46,3 +46,20 @@ class AlunoModel:
             if aluno["id"] == aluno_id:
                 return jsonify({"aluno": aluno}), 200
         return jsonify({"error": "Aluno não encontrado"}), 404
+
+    def update_aluno(self, aluno_id, data):
+        for aluno in self.alunos:
+            if aluno['id'] == aluno_id:
+
+                valid, message = self.valid_data_student(data)
+                if not valid:
+                    return jsonify({"erro": message}), 400
+
+                aluno.update(data)
+
+                return jsonify({
+                    "message": "Aluno atualizado com sucesso!",
+                    "alunos": self.alunos
+                }), 200
+
+        return jsonify({"error": "aluno não encontrado"}), 404
