@@ -37,7 +37,11 @@ class TestAPP(unittest.TestCase):
     def test_get_alunos(self):
         response = self.app.get('/alunos')
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(json.loads(response.data), list)
+        data = json.loads(response.data)
+        self.assertIsInstance(data, dict)
+        self.assertIn('alunos', data)
+        self.assertIsInstance(data['alunos'], list)
+        self.assertEqual(len(data['alunos']), len(alunos))
 
     def test_get_aluno_existente(self):
         response = self.app.get('/alunos/1')
