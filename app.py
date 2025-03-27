@@ -53,11 +53,7 @@ def update_aluno(aluno_id):
 
 @app.route('/alunos/<int:aluno_id>', methods=['DELETE'])
 def delete_aluno(aluno_id):
-    for aluno in alunos:
-        if aluno['id'] == aluno_id:
-            alunos.remove(aluno)
-            return jsonify({"message": "Aluno deletado com sucesso!"})
-    return jsonify({"error": "aluno não encontrado"}), 404
+    return alunos_model.delete_aluno(aluno_id)
 
 
 @app.route('/professores', methods=['GET'])

@@ -63,3 +63,10 @@ class AlunoModel:
                 }), 200
 
         return jsonify({"error": "aluno não encontrado"}), 404
+
+    def delete_aluno(self, aluno_id):
+        for aluno in self.alunos:
+            if aluno['id'] == aluno_id:
+                self.alunos.remove(aluno)
+                return jsonify({"message": "Aluno deletado com sucesso!"})
+        return jsonify({"error": "aluno não encontrado"}), 404
