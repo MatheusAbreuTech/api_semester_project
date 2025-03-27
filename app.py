@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-
+from aluno.aluno_model import AlunoModel
 app = Flask(__name__)
 
 alunos =  [
@@ -21,6 +21,8 @@ turmas = [
     {"id": 2, "nome": "Turma B", "professor": "Carlos Souza", },
     {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", }
 ]
+
+alunos_model = AlunoModel()
 
 def valid_data_student(data):
     required_fields = ["nome", "idade"]
@@ -51,24 +53,8 @@ def get_aluno(aluno_id):
 @app.route('/alunos', methods=['POST'])
 def create_aluno():
     data = request.json
+    return alunos_model.create_aluno(data)
 
-    valid, message = valid_data_student(data)
-    if not valid:
-        return jsonify({"erro": message}), 400
-
-    aluno = {
-        "id": len(alunos) + 1,
-        "nome": data["nome"],
-        "idade": data["idade"],
-        "turma_id": None
-    }
-
-    alunos.append(aluno)
-
-    return jsonify({
-        "message": "Aluno criado com sucesso!",
-        "alunos": alunos
-    })
 
 @app.route('/alunos/<int:aluno_id>', methods=['PUT'])
 def update_aluno(aluno_id):
