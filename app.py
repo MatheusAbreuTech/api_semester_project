@@ -35,26 +35,16 @@ def valid_data_student(data):
 
 @app.route('/alunos', methods=['GET'])
 def get_alunos():
-    data = alunos
-
-    if data is None:
-        return jsonify([])
-    return jsonify(alunos)
+    return alunos_model.get_alunos()
 
 @app.route('/alunos/<int:aluno_id>', methods=['GET'])
 def get_aluno(aluno_id):
-    aluno = next((a for a in alunos if a['id'] == aluno_id), None)
-
-    if aluno:
-        return jsonify({"aluno": aluno}), 200
-
-    return jsonify({"error": "Aluno não encontrado"}), 404
+    return alunos_model.get_aluno(aluno_id)
 
 @app.route('/alunos', methods=['POST'])
 def create_aluno():
     data = request.json
     return alunos_model.create_aluno(data)
-
 
 @app.route('/alunos/<int:aluno_id>', methods=['PUT'])
 def update_aluno(aluno_id):

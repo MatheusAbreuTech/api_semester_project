@@ -37,3 +37,12 @@ class AlunoModel:
             "message": "Aluno criado com sucesso!",
             "alunos": self.alunos
         })
+
+    def get_alunos(self):
+        return jsonify({"alunos": self.alunos}), 200
+
+    def get_aluno(self, aluno_id):
+        for aluno in self.alunos:
+            if aluno["id"] == aluno_id:
+                return jsonify({"aluno": aluno}), 200
+        return jsonify({"error": "Aluno não encontrado"}), 404
