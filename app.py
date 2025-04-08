@@ -1,13 +1,15 @@
 from flask import Flask, jsonify, request
 
+from aluno.aluno_model import AlunoModel
+
 app = Flask(__name__)
 
-alunos =  [
-        {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
-        {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 1},
-        {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 2},
-        {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 2},
-        {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 2}
+alunos = [
+    {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
+    {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 1},
+    {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 2},
+    {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 2},
+    {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 2}
 ]
 
 professores = [
@@ -22,6 +24,9 @@ turmas = [
     {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", }
 ]
 
+alunos_model = AlunoModel()
+
+
 def valid_data_student(data):
     required_fields = ["nome", "idade"]
     for field in required_fields:
@@ -31,71 +36,32 @@ def valid_data_student(data):
         return False, "O campo 'idade' deve ser um número inteiro positivo."
     return True, ""
 
+
 @app.route('/alunos', methods=['GET'])
 def get_alunos():
-    data = alunos
+    return alunos_model.get_alunos()
 
-    if data is None:
-        return jsonify([])
-    return jsonify(alunos)
 
 @app.route('/alunos/<int:aluno_id>', methods=['GET'])
 def get_aluno(aluno_id):
-    aluno = next((a for a in alunos if a['id'] == aluno_id), None)
+    return alunos_model.get_aluno(aluno_id)
 
-    if aluno:
-        return jsonify({"aluno": aluno}), 200
-
-    return jsonify({"error": "Aluno não encontrado"}), 404
 
 @app.route('/alunos', methods=['POST'])
 def create_aluno():
     data = request.json
+    return alunos_model.create_aluno(data)
 
-    valid, message = valid_data_student(data)
-    if not valid:
-        return jsonify({"erro": message}), 400
-
-    aluno = {
-        "id": len(alunos) + 1,
-        "nome": data["nome"],
-        "idade": data["idade"],
-        "turma_id": None
-    }
-
-    alunos.append(aluno)
-
-    return jsonify({
-        "message": "Aluno criado com sucesso!",
-        "alunos": alunos
-    })
 
 @app.route('/alunos/<int:aluno_id>', methods=['PUT'])
 def update_aluno(aluno_id):
-    for aluno in alunos:
-        if aluno['id'] == aluno_id:
-            data = request.json
+    data = request.json
+    return alunos_model.update_aluno(aluno_id, data)
 
-            valid, message = valid_data_student(data)
-            if not valid:
-                return jsonify({"erro": message}), 400
-
-            aluno.update(data)
-
-            return jsonify({
-                "message": "Aluno atualizado com sucesso!",
-                "alunos": alunos
-            }), 200
-
-    return jsonify({"error": "aluno não encontrado"}), 404
 
 @app.route('/alunos/<int:aluno_id>', methods=['DELETE'])
 def delete_aluno(aluno_id):
-    for aluno in alunos:
-        if aluno['id'] == aluno_id:
-            alunos.remove(aluno)
-            return jsonify({"message": "Aluno deletado com sucesso!"})
-    return jsonify({"error": "aluno não encontrado"}), 404
+    return alunos_model.delete_aluno(aluno_id)
 
 
 @app.route('/professores', methods=['GET'])
@@ -157,6 +123,7 @@ def update_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
+
 @app.route('/professor/<int:professor_id>', methods=['DELETE'])
 def delete_professor(professor_id):
     for professor in professores:
@@ -168,12 +135,14 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
+
 @app.route('/turmas', methods=['GET'])
 def get_turmas():
     data = turmas
     if data is None:
         return jsonify([])
     return jsonify(turmas)
+
 
 @app.route('/turma/<int:turma_id>', methods=['GET'])
 def get_turma(turma_id):
@@ -184,6 +153,7 @@ def get_turma(turma_id):
             }), 200
 
     return jsonify({'error': 'turma nao encontrada'}), 404
+
 
 @app.route('/turma', methods=['POST'])
 def create_turma():
@@ -206,7 +176,8 @@ def create_turma():
                 'message': 'turma criada com sucesso',
                 'turma': turma
             }), 200
-    return jsonify({'error': f'professor {data['id_professor']} nao encontrado'}), 404
+    return jsonify({'error': f'professor {data["id_professor"]} nao encontrado'}), 404
+
 
 @app.route('/turma/<int:turma_id>', methods=['PUT'])
 def update_turma(turma_id):
@@ -230,8 +201,9 @@ def update_turma(turma_id):
                         'message': 'turma atualizada com sucesso',
                         'turma': turma
                     }), 200
-            return jsonify({'error': f'professor {data['id_professor']} nao encontrado'}), 404
+            return jsonify({'error': f'professor {data["id_professor"]} nao encontrado'}), 404
     return jsonify({'error': 'turma nao encontrada'}), 404
+
 
 @app.route('/turma/<int:turma_id>', methods=['DELETE'])
 def delete_turma(turma_id):
@@ -243,6 +215,7 @@ def delete_turma(turma_id):
             })
 
     return jsonify({'error': 'turma nao encontrada'}), 404
+
 
 @app.route('/turma/adiciona-aluno/<int:turma_id>/<int:aluno_id>', methods=['POST'])
 def cadastra_aluno_turma(turma_id, aluno_id):
@@ -260,6 +233,7 @@ def cadastra_aluno_turma(turma_id, aluno_id):
     return jsonify({
         'message': f'aluno cadastrado com sucesso na turma {turma_id}'
     })
+
 
 if __name__ == '__main__':
     app.run(debug=True)
