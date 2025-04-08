@@ -1,14 +1,6 @@
 from flask import Flask, jsonify, request
 from config import app
-from aluno.aluno_model import AlunoModel
-
-alunos = [
-    {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
-    {"id": 2, "nome": "Mariana Lima", "idade": 14, "turma_id": 1},
-    {"id": 3, "nome": "Lucas Oliveira", "idade": 16, "turma_id": 2},
-    {"id": 4, "nome": "Beatriz Santos", "idade": 15, "turma_id": 2},
-    {"id": 5, "nome": "Gabriel Martins", "idade": 14, "turma_id": 2}
-]
+from aluno.aluno_controller import alunos_blueprint
 
 professores = [
     {"id": 1, "nome": "Ana Silva", "disciplina": "Matemática"},
@@ -22,45 +14,7 @@ turmas = [
     {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", }
 ]
 
-alunos_model = AlunoModel()
-
-
-def valid_data_student(data):
-    required_fields = ["nome", "idade"]
-    for field in required_fields:
-        if field not in data or not data[field]:
-            return False, f"O campo {field} é obrigatório."
-    if not isinstance(data["idade"], int) or data["idade"] <= 0:
-        return False, "O campo 'idade' deve ser um número inteiro positivo."
-    return True, ""
-
-
-@app.route('/alunos', methods=['GET'])
-def get_alunos():
-    return alunos_model.get_alunos()
-
-
-@app.route('/alunos/<int:aluno_id>', methods=['GET'])
-def get_aluno(aluno_id):
-    return alunos_model.get_aluno(aluno_id)
-
-
-@app.route('/alunos', methods=['POST'])
-def create_aluno():
-    data = request.json
-    return alunos_model.create_aluno(data)
-
-
-@app.route('/alunos/<int:aluno_id>', methods=['PUT'])
-def update_aluno(aluno_id):
-    data = request.json
-    return alunos_model.update_aluno(aluno_id, data)
-
-
-@app.route('/alunos/<int:aluno_id>', methods=['DELETE'])
-def delete_aluno(aluno_id):
-    return alunos_model.delete_aluno(aluno_id)
-
+app.register_blueprint(alunos_blueprint)
 
 @app.route('/professores', methods=['GET'])
 def get_professores():
@@ -68,7 +22,6 @@ def get_professores():
     if data is None:
         return jsonify([])
     return jsonify(professores)
-
 
 @app.route('/professor/<int:professor_id>', methods=['GET'])
 def get_professor(professor_id):
@@ -79,7 +32,6 @@ def get_professor(professor_id):
             })
 
     return jsonify({'error': 'professor nao encontrado'}), 404
-
 
 @app.route('/professor', methods=['POST'])
 def create_professor():

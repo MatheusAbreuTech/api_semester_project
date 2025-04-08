@@ -35,7 +35,7 @@ class AlunoModel:
 
         return jsonify({
             "message": "Aluno criado com sucesso!",
-            "alunos": self.alunos
+            "aluno": aluno
         })
 
     def get_alunos(self):
