@@ -58,6 +58,8 @@ class TestAPP(unittest.TestCase):
     def test_get_aluno_inexistente(self):
         response = self.app.get('/alunos/999')
         self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["error"], "Aluno não encontrado")
 
     def test_create_aluno(self):
         novo_aluno = {
@@ -67,22 +69,45 @@ class TestAPP(unittest.TestCase):
         }
         response = self.app.post('/alunos', data=json.dumps(novo_aluno), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('message', json.loads(response.data))
+        data = json.loads(response.data)
+        self.assertIn('message', data)
+        self.assertEqual(data['message'], 'Aluno criado com sucesso!')
+        self.assertIn('aluno', data)
+        self.assertIsInstance(data['aluno'], dict)
+        self.assertIn('id', data['aluno'])
+        self.assertIsInstance(data['aluno']['id'], int)
 
     def test_create_aluno_dados_invalidos(self):
-        aluno_invalido = {
-            "nome": "Sem Idade"
-        }
-        response = self.app.post('/alunos', json=aluno_invalido)
-        self.assertEqual(response.status_code, 400)
+        dados_invalidos = [
+            {"nome": "Sem Idade"},
+            {"idade": 18, "turma_id": 1},
+            {"nome": "", "idade": 18, "turma_id": 1},
+            {"nome": "Sem Idade", "idade": 0, "turma_id": 1},
+            {"nome": "Sem Idade", "idade": -1, "turma_id": 1},
+            {"nome": "Sem Idade", "idade": "idade inválida", "turma_id": 1},
+        ]
 
-        data = json.loads(response.data)
-        self.assertIn("erro", data)
+        for dados in dados_invalidos:
+            response = self.app.post('/alunos', json=dados)
+            self.assertEqual(response.status_code, 400)
+
+            data = json.loads(response.data)
+            self.assertIn("erro", data)
 
     def test_update_aluno_existente(self):
         update_data = {"nome": "João Modificado", "idade": 16, "turma_id": 1}
         response = self.app.put('/alunos/1', json=update_data)
         self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "Aluno atualizado com sucesso!")
+        self.assertIn("alunos", data)
+        self.assertIsInstance(data["alunos"], list)
+        aluno = next((a for a in data["alunos"] if a["id"] == 1), None)
+        self.assertIsNotNone(aluno)
+        self.assertEqual(aluno["nome"], "João Modificado")
+        self.assertEqual(aluno["idade"], 16)
+        self.assertEqual(aluno["turma_id"], 1)
 
     def test_update_aluno_inexistente(self):
         update_data = {"nome": "Nome Inválido", "idade": 18, "turma_id": 2}
@@ -92,19 +117,32 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["error"], "aluno não encontrado")
 
+    def test_update_aluno_invalido(self):
+        update_data = {"nome": "", "idade": 18, "turma_id": 2}
+        response = self.app.put('/alunos/1', json=update_data)
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertIn("erro", data)
+
     def test_delete_aluno_existente(self):
+        quantidade_alunos_inicial = len(alunos)
         response = self.app.delete('/alunos/2')
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
         self.assertEqual(data["message"], "Aluno deletado com sucesso!")
 
+        quantidade_alunos_final = len(alunos) - 1
+        self.assertLess(quantidade_alunos_final, quantidade_alunos_inicial)
+
     def test_delete_aluno_inexistente(self):
         response = self.app.delete('/alunos/999')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, "Status code should be 404 for non-existing aluno")
 
         data = json.loads(response.data)
-        self.assertEqual(data["error"], "aluno não encontrado")
+        self.assertIn("error", data, "Response should contain an 'error' key")
+        self.assertEqual(data["error"], "aluno não encontrado", "Error message should be 'aluno não encontrado'")
 
     def test_get_professor_existente(self):
         response = self.app.get('/professor/1')
