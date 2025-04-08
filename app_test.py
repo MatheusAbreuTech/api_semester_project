@@ -46,7 +46,14 @@ class TestAPP(unittest.TestCase):
     def test_get_aluno_existente(self):
         response = self.app.get('/alunos/1')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('aluno', json.loads(response.data))
+        data = json.loads(response.data)
+        self.assertIsInstance(data, dict)
+        self.assertIn('aluno', data)
+        self.assertIsInstance(data['aluno'], dict)
+        self.assertEqual(data['aluno']['id'], 1)
+        self.assertEqual(data['aluno']['nome'], 'João Pereira')
+        self.assertEqual(data['aluno']['idade'], 15)
+        self.assertEqual(data['aluno']['turma_id'], 1)
 
     def test_get_aluno_inexistente(self):
         response = self.app.get('/alunos/999')
