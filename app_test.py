@@ -1,7 +1,10 @@
 import unittest
 
 from flask import json
-from app import app, alunos, professores, turmas
+from app import app
+from database.alunos import alunos
+from database.professores import professores
+from database.turmas import turmas
 
 
 class TestAPP(unittest.TestCase):
@@ -9,7 +12,6 @@ class TestAPP(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
 
-        global alunos, professores, turmas
         alunos.clear()
         professores.clear()
         turmas.clear()

@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint,request
 from aluno.aluno_model import AlunoModel
 
 alunos_blueprint = Blueprint('alunos', __name__)
