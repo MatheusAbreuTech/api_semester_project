@@ -1,8 +1,6 @@
 from flask import Flask, jsonify, request
-
+from config import app
 from aluno.aluno_model import AlunoModel
-
-app = Flask(__name__)
 
 alunos = [
     {"id": 1, "nome": "João Pereira", "idade": 15, "turma_id": 1},
@@ -234,6 +232,5 @@ def cadastra_aluno_turma(turma_id, aluno_id):
         'message': f'aluno cadastrado com sucesso na turma {turma_id}'
     })
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(host=app.config["HOST"], port = app.config['PORT'],debug=app.config['DEBUG'] )
