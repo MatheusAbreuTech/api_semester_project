@@ -1,18 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import  jsonify, request
 from config import app
 from aluno.aluno_controller import alunos_blueprint
-
-professores = [
-    {"id": 1, "nome": "Ana Silva", "disciplina": "Matemática"},
-    {"id": 2, "nome": "Carlos Souza", "disciplina": "História"},
-    {"id": 3, "nome": "Fernanda Costa", "disciplina": "Biologia"}
-]
-
-turmas = [
-    {"id": 1, "nome": "Turma A", "professor": "Ana Silva", },
-    {"id": 2, "nome": "Turma B", "professor": "Carlos Souza", },
-    {"id": 3, "nome": "Turma C", "professor": "Fernanda Costa", }
-]
+from database.alunos import alunos
+from database.professores import professores
+from database.turmas import turmas
 
 app.register_blueprint(alunos_blueprint)
 
