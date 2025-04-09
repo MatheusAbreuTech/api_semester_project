@@ -76,22 +76,5 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
-@app.route('/turma/adiciona-aluno/<int:turma_id>/<int:aluno_id>', methods=['POST'])
-def cadastra_aluno_bturma(turma_id, aluno_id):
-    aluno = next((a for a in alunos if a['id'] == aluno_id), None)
-    turma = next((a for a in turmas if a['id'] == turma_id), None)
-    print(aluno, turma)
-    if not aluno in alunos:
-        return jsonify({'error': 'aluno nao encontrado'}), 404
-    if not turma in turmas:
-        return jsonify({'error': 'turma nao encontrado'}), 404
-
-    aluno["turma_id"] = turma_id
-
-    aluno.update(aluno)
-    return jsonify({
-        'message': f'aluno cadastrado com sucesso na turma {turma_id}'
-    })
-
 if __name__ == '__main__':
   app.run(host=app.config["HOST"], port = app.config['PORT'],debug=app.config['DEBUG'] )

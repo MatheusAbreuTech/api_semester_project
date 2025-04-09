@@ -1,4 +1,6 @@
 from flask import jsonify
+
+from database.alunos import alunos
 from database.turmas import turmas
 from database.professores import professores
 
@@ -64,4 +66,14 @@ class TurmaModel:
                 return jsonify({'message': 'turma removida com sucesso'})
         return jsonify({'error': 'turma nao encontrada'}), 404
 
+    def add_student_in_the_class(self, turma_id, aluno_id):
+        aluno = next((a for a in alunos if a['id'] == aluno_id), None)
+        turma = next((t for t in turmas if t['id'] == turma_id), None)
 
+        if not aluno:
+            return jsonify({'error': 'aluno nao encontrado'}), 404
+        if not turma:
+            return jsonify({'error': 'turma nao encontrado'}), 404
+
+        aluno["turma_id"] = turma_id
+        return jsonify({'message': f'aluno cadastrado com sucesso na turma {turma_id}'})
