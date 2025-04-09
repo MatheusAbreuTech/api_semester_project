@@ -1,3 +1,4 @@
+from flask import jsonify
 from database.turmas import turmas
 from database.professores import professores
 
@@ -6,7 +7,7 @@ class TurmaModel:
     def __init__(self):
         self.turmas = turmas
 
-    def validar_dados_turma(self, data):
+    def vald_data_class(self, data):
         if 'nome' not in data:
             return False, 'nome é um campo obrigatório'
         if 'id_professor' not in data:
@@ -16,3 +17,13 @@ class TurmaModel:
             return False, f'professor {data["id_professor"]} nao encontrado'
 
         return True, ''
+
+    def get_turmas(self):
+        return jsonify({'turmas': self.turmas})
+
+    def get_turma(self, turma_id):
+        for turma in self.turmas:
+            if turma['id'] == turma_id:
+                return jsonify({'turma': turma}), 200
+        return jsonify({'error': 'turma nao encontrada'}), 404
+
