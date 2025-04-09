@@ -76,18 +76,6 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
-@app.route('/turma/<int:turma_id>', methods=['DELETE'])
-def delete_turma(turma_id):
-    for turma in turmas:
-        if turma['id'] == turma_id:
-            turmas.remove(turma)
-            return jsonify({
-                'message': 'turma removida com sucesso'
-            })
-
-    return jsonify({'error': 'turma nao encontrada'}), 404
-
-
 @app.route('/turma/adiciona-aluno/<int:turma_id>/<int:aluno_id>', methods=['POST'])
 def cadastra_aluno_bturma(turma_id, aluno_id):
     aluno = next((a for a in alunos if a['id'] == aluno_id), None)

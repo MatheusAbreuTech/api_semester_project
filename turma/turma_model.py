@@ -57,4 +57,11 @@ class TurmaModel:
                 }), 200
         return jsonify({'error': 'turma nao encontrada'}), 404
 
+    def delete_turma(self, turma_id):
+        for turma in self.turmas:
+            if turma['id'] == turma_id:
+                self.turmas.remove(turma)
+                return jsonify({'message': 'turma removida com sucesso'})
+        return jsonify({'error': 'turma nao encontrada'}), 404
+
 
