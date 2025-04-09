@@ -66,14 +66,15 @@ class TurmaModel:
                 return jsonify({'message': 'turma removida com sucesso'})
         return jsonify({'error': 'turma nao encontrada'}), 404
 
-    def add_student_in_the_class(self, turma_id, aluno_id):
+    def add_student(self, turma_id, aluno_id):
         aluno = next((a for a in alunos if a['id'] == aluno_id), None)
-        turma = next((t for t in turmas if t['id'] == turma_id), None)
+        turma = next((t for t in self.turmas if t['id'] == turma_id), None)
 
-        if not aluno:
-            return jsonify({'error': 'aluno nao encontrado'}), 404
-        if not turma:
-            return jsonify({'error': 'turma nao encontrado'}), 404
+        if not turma or not aluno:
+            return jsonify({'error': 'turma ou aluno nao encontrado'}), 404
 
         aluno["turma_id"] = turma_id
-        return jsonify({'message': f'aluno cadastrado com sucesso na turma {turma_id}'})
+        if aluno_id not in turma["alunos"]:
+            turma["alunos"].append(aluno_id)
+
+        return jsonify({'message': f'aluno {aluno_id} cadastrado com sucesso na turma {turma_id}'}), 200
