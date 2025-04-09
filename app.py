@@ -76,32 +76,6 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
-@app.route('/turma/<int:turma_id>', methods=['PUT'])
-def update_turma(turma_id):
-    for turma in turmas:
-        if turma['id'] == turma_id:
-            data = request.json
-            if 'nome' not in data:
-                return jsonify({'error': 'nome é um campo obrigatório'}), 400
-
-            if 'id_professor' not in data:
-                return jsonify({'error': 'id_professor é um campo obrigatório'}), 400
-
-            for professor in professores:
-                if professor['id'] == data['id_professor']:
-                    turma = {
-                        'nome': data['nome'],
-                        'id_professor': data['id_professor']
-                    }
-                    turma.update(turma)
-                    return jsonify({
-                        'message': 'turma atualizada com sucesso',
-                        'turma': turma
-                    }), 200
-            return jsonify({'error': f'professor {data["id_professor"]} nao encontrado'}), 404
-    return jsonify({'error': 'turma nao encontrada'}), 404
-
-
 @app.route('/turma/<int:turma_id>', methods=['DELETE'])
 def delete_turma(turma_id):
     for turma in turmas:
@@ -115,7 +89,7 @@ def delete_turma(turma_id):
 
 
 @app.route('/turma/adiciona-aluno/<int:turma_id>/<int:aluno_id>', methods=['POST'])
-def cadastra_aluno_turma(turma_id, aluno_id):
+def cadastra_aluno_bturma(turma_id, aluno_id):
     aluno = next((a for a in alunos if a['id'] == aluno_id), None)
     turma = next((a for a in turmas if a['id'] == turma_id), None)
     print(aluno, turma)

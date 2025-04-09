@@ -7,7 +7,7 @@ class TurmaModel:
     def __init__(self):
         self.turmas = turmas
 
-    def vald_data_class(self, data):
+    def valid_data_class(self, data):
         if 'nome' not in data:
             return False, 'nome é um campo obrigatório'
         if 'id_professor' not in data:
@@ -42,4 +42,19 @@ class TurmaModel:
             'message': 'turma criada com sucesso',
             'turma': turma
         }), 200
+
+    def update_turma(self, turma_id, data):
+        for turma in self.turmas:
+            if turma['id'] == turma_id:
+                valid, msg = self.valid_data_class(data)
+                if not valid:
+                    return jsonify({'error': msg}), 400
+
+                turma.update(data)
+                return jsonify({
+                    'message': 'turma atualizada com sucesso',
+                    'turma': turma
+                }), 200
+        return jsonify({'error': 'turma nao encontrada'}), 404
+
 
