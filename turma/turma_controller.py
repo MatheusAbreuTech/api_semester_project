@@ -16,3 +16,8 @@ def get_turma(turma_id):
 def create_turma():
     data = request.json
     return turmas_model.create_turma(data)
+
+@turmas_blueprint.route("/turmas/<int:turma_id>", methods=['PUT'])
+def update_turma(turma_id):
+    data = request.json
+    return turmas_model.update_turma(turma_id, data)
