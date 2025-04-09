@@ -25,7 +25,7 @@ class ProfessorModel:
         for professor in self.professores:
             if professor["id"] == professor_id:
                 return jsonify({"professor": professor}), 200
-            return jsonify({'error': 'aluno não encontrado'}),400
+            return jsonify({'error': 'professor não encontrado'}),404
 
     def get_professores(self):
         return jsonify({"professores": self.professores}), 200
@@ -45,6 +45,9 @@ class ProfessorModel:
                     'message': 'professor atualizado com sucesso',
                     'professor': professor
                 })
+
+        return jsonify({'error': 'professor nao encontrado'}), 404
+    
     def delete_professor(self,professor_id):
         for professor in professores:
             if professor['id'] == professor_id:
