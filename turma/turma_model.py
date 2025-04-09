@@ -3,7 +3,7 @@ from flask import jsonify
 from database.alunos import alunos
 from database.turmas import turmas
 from database.professores import professores
-
+from professor.professor_model import ProfessorModel
 
 class TurmaModel:
     def __init__(self):
@@ -16,10 +16,10 @@ class TurmaModel:
             return False, 'nome é um campo obrigatório'
         if 'id_professor' not in data:
             return False, 'id_professor é um campo obrigatório'
-
-        if not any(p['id'] == data['id_professor'] for p in professores):
-            return False, f'professor {data["id_professor"]} nao encontrado'
-
+        for professor in self.professores:
+                if professor["id"] == data["id_professor"]:
+                    return True, ""
+        return False, "professor não encontrado"
         return True, ''
 
     def get_turmas(self):
@@ -35,7 +35,7 @@ class TurmaModel:
         valid, msg = self.valid_data_class(data)
         if not valid:
             return jsonify({'error': msg}), 400
-
+        
         turma = {
             'id': len(self.turmas) + 1,
             'nome': data['nome'],

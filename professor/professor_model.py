@@ -11,7 +11,7 @@ class ProfessorModel:
         professor = {
             "id": len(self.professores) + 1,
             "nome": data["nome"],
-            "disciplina": data["disciplina"]
+            "turma_id": None
         }
 
         self.professores.append(professor)
@@ -20,12 +20,11 @@ class ProfessorModel:
             "professor": professor
         })
 
-
-    def get_professor(self,professor_id):
+    def get_professor(self, professor_id):
         for professor in self.professores:
             if professor["id"] == professor_id:
                 return jsonify({"professor": professor}), 200
-            return jsonify({'error': 'professor não encontrado'}),404
+        return jsonify({'error': 'professor não encontrado'}), 404
 
     def get_professores(self):
         return jsonify({"professores": self.professores}), 200
