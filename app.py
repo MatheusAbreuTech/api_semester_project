@@ -76,26 +76,6 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
-
-@app.route('/turmas', methods=['GET'])
-def get_turmas():
-    data = turmas
-    if data is None:
-        return jsonify([])
-    return jsonify(turmas)
-
-
-@app.route('/turma/<int:turma_id>', methods=['GET'])
-def get_turma(turma_id):
-    for turma in turmas:
-        if turma['id'] == turma_id:
-            return jsonify({
-                'turma': turma
-            }), 200
-
-    return jsonify({'error': 'turma nao encontrada'}), 404
-
-
 @app.route('/turma', methods=['POST'])
 def create_turma():
     data = request.json
