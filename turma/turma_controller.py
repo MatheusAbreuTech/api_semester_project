@@ -29,3 +29,8 @@ def delete_turma(turma_id):
 @turmas_blueprint.route('/turmas/<int:turma_id>/professor/<int:professor_id>', methods=['POST'])
 def add_professor(turma_id, professor_id):
     return turmas_model.add_professor(turma_id, professor_id)
+
+@turmas_blueprint.route('/turmas/<int:turma_id>/professor', methods=['DELETE'])
+def remove_professor(turma_id):
+    return turmas_model.remove_professor(turma_id)
+
