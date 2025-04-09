@@ -102,3 +102,11 @@ class TurmaModel:
 
         turma["id_professor"] = professor_id
         return jsonify({"message": "professor adicionado à turma com sucesso"}), 200
+
+    def remove_professor(self, turma_id):
+        turma = next((t for t in self.turmas if t["id"] == turma_id), None)
+        if not turma:
+            return jsonify({"error": "turma nao encontrada"}), 404
+
+        turma["id_professor"] = None
+        return jsonify({"message": "professor removido da turma com sucesso"}), 200
