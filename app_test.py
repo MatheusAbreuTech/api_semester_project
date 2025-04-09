@@ -6,7 +6,6 @@ from database.alunos import alunos
 from database.professores import professores
 from database.turmas import turmas
 
-
 class TestAPP(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
