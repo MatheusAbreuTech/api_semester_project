@@ -21,3 +21,7 @@ def create_turma():
 def update_turma(turma_id):
     data = request.json
     return turmas_model.update_turma(turma_id, data)
+
+@turmas_blueprint.route("/turmas/<int:turma_id>", methods=['DELETE'])
+def delete_turma(turma_id):
+    return turmas_model.delete_turma(turma_id)
