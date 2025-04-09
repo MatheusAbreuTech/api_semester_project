@@ -7,6 +7,7 @@ from database.professores import professores
 
 class TurmaModel:
     def __init__(self):
+        self.professores = professores
         self.alunos = alunos
         self.turmas = turmas
 
@@ -91,3 +92,13 @@ class TurmaModel:
         aluno["turma_id"] = None
 
         return jsonify({"message": f"aluno {aluno_id} removido da turma {turma_id} com sucesso"}), 200
+
+    def add_professor(self, turma_id, professor_id):
+        turma = next((t for t in self.turmas if t["id"] == turma_id), None)
+        if not turma:
+            return jsonify({"error": "turma nao encontrada"}), 404
+        if not any(p["id"] == professor_id for p in self.professores):
+            return jsonify({"error": "professor nao encontrado"}), 404
+
+        turma["id_professor"] = professor_id
+        return jsonify({"message": "professor adicionado à turma com sucesso"}), 200
