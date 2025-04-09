@@ -42,3 +42,4 @@ def add_student(turma_id, aluno_id):
 def remove_student(turma_id, aluno_id):
     return turmas_model.remove_student(turma_id, aluno_id)
 
+
