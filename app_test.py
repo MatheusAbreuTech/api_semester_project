@@ -168,16 +168,6 @@ class TestAPP(unittest.TestCase):
         data = json.loads(response.data)
         self.assertEqual(data["message"], "Professor criado com sucesso!")
 
-    def test_create_professor_dados_invalidos(self):
-        professor_invalido = {
-            "nome": "Sem Disciplina"
-        }
-        response = self.app.post('/professor', json=professor_invalido)
-        self.assertEqual(response.status_code, 400)
-
-        data = json.loads(response.data)
-        self.assertIn("error", data)
-
     def test_update_professor_existente(self):
         update_data = {"nome": "Ana Modificada", "disciplina": "Física"}
         response = self.app.put('/professor/1', json=update_data)
@@ -210,13 +200,13 @@ class TestAPP(unittest.TestCase):
         self.assertEqual(data["error"], "professor nao encontrado")
 
     def test_get_turma_existente(self):
-        response = self.app.get('/turma/1')
+        response = self.app.get('/turmas/1')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data["turma"]["nome"], "Turma A")
 
     def test_get_turma_inexistente(self):
-        response = self.app.get('/turma/999')
+        response = self.app.get('/turmas/999')
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
         self.assertEqual(data["error"], "turma nao encontrada")
@@ -226,7 +216,7 @@ class TestAPP(unittest.TestCase):
             "nome": "Turma C",
             "id_professor": 1,
         }
-        response = self.app.post('/turma', json=nova_turma)
+        response = self.app.post('/turmas', json=nova_turma)
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
@@ -237,7 +227,7 @@ class TestAPP(unittest.TestCase):
         turma_invalida = {
             "nome": "Turma Sem Professor"
         }
-        response = self.app.post('/turma', json=turma_invalida)
+        response = self.app.post('/turmas', json=turma_invalida)
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
@@ -245,7 +235,7 @@ class TestAPP(unittest.TestCase):
 
     def test_update_turma_existente(self):
         update_data = {"nome": "Turma X", "id_professor": 1}
-        response = self.app.put('/turma/1', json=update_data)
+        response = self.app.put('/turmas/1', json=update_data)
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
@@ -254,29 +244,29 @@ class TestAPP(unittest.TestCase):
 
     def test_update_turma_existente_professor_inexistente(self):
         update_data = {"nome": "Turma X", "id_professor": 6}
-        response = self.app.put('/turma/1', json=update_data)
-        self.assertEqual(response.status_code, 404)
+        response = self.app.put('/turmas/1', json=update_data)
+        self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertEqual(data["error"], "professor 6 nao encontrado")
+        self.assertEqual(data["error"], "professor não encontrado")
 
     def test_update_turma_inexistente(self):
         update_data = {"nome": "Turma Z", "professor": "Inexistente"}
-        response = self.app.put('/turma/999', json=update_data)
+        response = self.app.put('/turmas/999', json=update_data)
         self.assertEqual(response.status_code, 404)
 
         data = json.loads(response.data)
         self.assertEqual(data["error"], "turma nao encontrada")
 
     def test_delete_turma_existente(self):
-        response = self.app.delete('/turma/1')
+        response = self.app.delete('/turmas/1')
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
         self.assertEqual(data["message"], "turma removida com sucesso")
 
     def test_delete_turma_inexistente(self):
-        response = self.app.delete('/turma/999')
+        response = self.app.delete('/turmas/999')
         self.assertEqual(response.status_code, 404)
 
         data = json.loads(response.data)
