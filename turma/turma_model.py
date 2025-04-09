@@ -27,3 +27,19 @@ class TurmaModel:
                 return jsonify({'turma': turma}), 200
         return jsonify({'error': 'turma nao encontrada'}), 404
 
+    def create_turma(self, data):
+        valid, msg = self.valid_data_class(data)
+        if not valid:
+            return jsonify({'error': msg}), 400
+
+        turma = {
+            'id': len(self.turmas) + 1,
+            'nome': data['nome'],
+            'id_professor': data['id_professor']
+        }
+        self.turmas.append(turma)
+        return jsonify({
+            'message': 'turma criada com sucesso',
+            'turma': turma
+        }), 200
+

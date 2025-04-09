@@ -76,30 +76,6 @@ def delete_professor(professor_id):
 
     return jsonify({'error': 'professor nao encontrado'}), 404
 
-@app.route('/turma', methods=['POST'])
-def create_turma():
-    data = request.json
-    if 'nome' not in data:
-        return jsonify({'error': 'nome é um campo obrigatório'}), 400
-
-    if 'id_professor' not in data:
-        return jsonify({'error': 'id_professor é um campo obrigatório'}), 400
-
-    for professor in professores:
-        if professor['id'] == data['id_professor']:
-            turma = {
-                'id': len(turmas) + 1,
-                'nome': data['nome'],
-                'id_professor': data['id_professor']
-            }
-            turmas.append(turma)
-            return jsonify({
-                'message': 'turma criada com sucesso',
-                'turma': turma
-            }), 200
-    return jsonify({'error': f'professor {data["id_professor"]} nao encontrado'}), 404
-
-
 @app.route('/turma/<int:turma_id>', methods=['PUT'])
 def update_turma(turma_id):
     for turma in turmas:
