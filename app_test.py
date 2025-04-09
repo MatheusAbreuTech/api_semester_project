@@ -155,7 +155,7 @@ class TestAPP(unittest.TestCase):
         response = self.app.get('/professor/999')
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
-        self.assertEqual(data["error"], "professor nao encontrado")
+        self.assertEqual(data["error"], "professor não encontrado")
 
     def test_create_professor(self):
         novo_professor = {
@@ -166,7 +166,7 @@ class TestAPP(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
-        self.assertEqual(data["message"], "professor criado com sucesso")
+        self.assertEqual(data["message"], "Professor criado com sucesso!")
 
     def test_create_professor_dados_invalidos(self):
         professor_invalido = {

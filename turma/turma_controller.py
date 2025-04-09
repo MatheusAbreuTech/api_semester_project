@@ -34,7 +34,7 @@ def add_professor(turma_id, professor_id):
 def remove_professor(turma_id):
     return turmas_model.remove_professor(turma_id)
 
-@turmas_blueprint.route('/turmas/<inueprint.routet:turma_id>/alunos/<int:aluno_id>', methods=['POST'])
+@turmas_blueprint.route('/turmas/<int:turma_id>/alunos/<int:aluno_id>', methods=['POST'])
 def add_student(turma_id, aluno_id):
     return turmas_model.add_student(turma_id, aluno_id)
 
