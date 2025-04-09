@@ -38,3 +38,7 @@ def remove_professor(turma_id):
 def add_student(turma_id, aluno_id):
     return turmas_model.add_student(turma_id, aluno_id)
 
+@turmas_blueprint.route('/turmas/<int:turma_id>/aluno/<int:aluno_id>', methods=['DELETE'])
+def remove_student(turma_id, aluno_id):
+    return turmas_model.remove_student(turma_id, aluno_id)
+
