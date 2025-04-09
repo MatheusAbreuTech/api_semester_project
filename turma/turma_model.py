@@ -7,6 +7,7 @@ from database.professores import professores
 
 class TurmaModel:
     def __init__(self):
+        self.alunos = alunos
         self.turmas = turmas
 
     def valid_data_class(self, data):
@@ -78,3 +79,15 @@ class TurmaModel:
             turma["alunos"].append(aluno_id)
 
         return jsonify({'message': f'aluno {aluno_id} cadastrado com sucesso na turma {turma_id}'}), 200
+
+    def remove_student(self, turma_id, aluno_id):
+        turma = next((t for t in self.turmas if t["id"] == turma_id), None)
+        aluno = next((a for a in self.alunos if a["id"] == aluno_id), None)
+        if not turma or not aluno:
+            return jsonify({"error": "turma ou aluno nao encontrado"}), 404
+
+        if aluno_id in turma["alunos"]:
+            turma["alunos"].remove(aluno_id)
+        aluno["turma_id"] = None
+
+        return jsonify({"message": f"aluno {aluno_id} removido da turma {turma_id} com sucesso"}), 200
