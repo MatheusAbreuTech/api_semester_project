@@ -1,5 +1,3 @@
-from flask import jsonify
-
 from database.alunos import alunos
 
 class AlunoModel:
@@ -18,7 +16,7 @@ class AlunoModel:
     def create_aluno(self, data):
         valid, message = self.valid_data_student(data)
         if not valid:
-            return jsonify({"erro": message}), 400
+            return {"erro": message}, 400
 
         aluno = {
             "id": len(self.alunos) + 1,
@@ -29,19 +27,19 @@ class AlunoModel:
 
         self.alunos.append(aluno)
 
-        return jsonify({
+        return {
             "message": "Aluno criado com sucesso!",
             "aluno": aluno
-        })
+        }
 
     def get_alunos(self):
-        return jsonify({"alunos": self.alunos}), 200
+        return {"alunos": self.alunos}, 200
 
     def get_aluno(self, aluno_id):
         for aluno in self.alunos:
             if aluno["id"] == aluno_id:
-                return jsonify({"aluno": aluno}), 200
-        return jsonify({"error": "Aluno não encontrado"}), 404
+                return {"aluno": aluno}, 200
+        return {"error": "Aluno não encontrado"}, 404
 
     def update_aluno(self, aluno_id, data):
         for aluno in self.alunos:
@@ -49,20 +47,20 @@ class AlunoModel:
 
                 valid, message = self.valid_data_student(data)
                 if not valid:
-                    return jsonify({"erro": message}), 400
+                    return {"erro": message}, 400
 
                 aluno.update(data)
 
-                return jsonify({
+                return {
                     "message": "Aluno atualizado com sucesso!",
                     "alunos": self.alunos
-                }), 200
+                }, 200
 
-        return jsonify({"error": "aluno não encontrado"}), 404
+        return {"error": "aluno não encontrado"}, 404
 
     def delete_aluno(self, aluno_id):
         for aluno in self.alunos:
             if aluno['id'] == aluno_id:
                 self.alunos.remove(aluno)
-                return jsonify({"message": "Aluno deletado com sucesso!"})
-        return jsonify({"error": "aluno não encontrado"}), 404
+                return {"message": "Aluno deletado com sucesso!"}, 200
+        return {"error": "aluno não encontrado"}, 404

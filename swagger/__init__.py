@@ -1,7 +1,7 @@
 from flask_restx import Api
 
 api = Api(
-    title='API do Semestre',
+    title='API de Gerenciamento Escolar',
     version='1.0',
-    description='Documentação com Swagger via Flask-RESTX'
+    description='Documentação da API de Gerenciamento Escolar'
 )
