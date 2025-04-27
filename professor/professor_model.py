@@ -11,6 +11,7 @@ class ProfessorModel:
         professor = {
             "id": len(self.professores) + 1,
             "nome": data["nome"],
+            "disciplina": data["disciplina"],
             "turma_id": None
         }
 
