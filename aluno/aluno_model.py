@@ -15,6 +15,24 @@ class Aluno(db.Model):
         self.idade = idade
         self.turma_id = turma_id
 
+    def save(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+            return self
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
     def __repr__(self):
         return f"<Aluno {self.nome}, Idade: {self.idade}, Turma: {self.turma_id}>"
     
