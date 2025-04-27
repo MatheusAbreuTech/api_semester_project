@@ -1,14 +1,22 @@
-from flask import  jsonify, request
-from config import app
-
+from flask import Flask
 from turma.turma_controller import turmas_blueprint
 from professor.professor_controller import professores_blueprint
-from swagger.config_swagger import configure_swagger
+from database.db import db
 
-app.register_blueprint(turmas_blueprint)
-app.register_blueprint(professores_blueprint)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('config.Config')
 
-configure_swagger(app)
+    db.init_app(app)
 
-if __name__ == '__main__':
-  app.run(host=app.config["HOST"],debug=app.config['DEBUG'] )
+    app.register_blueprint(turmas_blueprint)
+    app.register_blueprint(professores_blueprint)
+
+    with app.app_context():
+        from swagger.config_swagger import configure_swagger
+        configure_swagger(app)
+        db.create_all()
+
+    return app
+
+app = create_app()

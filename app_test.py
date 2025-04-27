@@ -1,7 +1,7 @@
 import unittest
 from flask import json
 from app import app
-from database.alunos import alunos
+from database.entities.alunos import alunos
 from database.professores import professores
 from database.turmas import turmas
 
