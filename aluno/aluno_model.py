@@ -1,66 +1,34 @@
-from database.alunos import alunos
+from flask_sqlalchemy import SQLAlchemy
+from app import db
 
-class AlunoModel:
-    def __init__(self):
-        self.alunos = alunos
+class Aluno(db.Model):
+    __tablename__ = 'alunos'
 
-    def valid_data_student(self, data):
-        required_fields = ["nome", "idade"]
-        for field in required_fields:
-            if field not in data or not data[field]:
-                return False, f"O campo {field} é obrigatório."
-        if not isinstance(data["idade"], int) or data["idade"] <= 0:
-            return False, "O campo 'idade' deve ser um número inteiro positivo."
-        return True, ""
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    idade = db.Column(db.Integer, nullable=False)
+    turma_id = db.Column(db.Integer, db.ForeignKey('turmas.id'), nullable=True)
 
-    def create_aluno(self, data):
-        valid, message = self.valid_data_student(data)
-        if not valid:
-            return {"erro": message}, 400
+    def __init__(self, nome, idade, turma_id):
+        self.nome = nome
+        self.idade = idade
+        self.turma_id = turma_id
 
-        aluno = {
-            "id": len(self.alunos) + 1,
-            "nome": data["nome"],
-            "idade": data["idade"],
-            "turma_id": None
-        }
-
-        self.alunos.append(aluno)
-
+    def __repr__(self):
+        return f"<Aluno {self.nome}, Idade: {self.idade}, Turma: {self.turma_id}>"
+    
+    def to_dict(self):
         return {
-            "message": "Aluno criado com sucesso!",
-            "aluno": aluno
+            'id': self.id,
+            'nome': self.nome,
+            'idade': self.idade,
+            'turma_id': self.turma_id
         }
-
-    def get_alunos(self):
-        return {"alunos": self.alunos}, 200
-
-    def get_aluno(self, aluno_id):
-        for aluno in self.alunos:
-            if aluno["id"] == aluno_id:
-                return {"aluno": aluno}, 200
-        return {"error": "Aluno não encontrado"}, 404
-
-    def update_aluno(self, aluno_id, data):
-        for aluno in self.alunos:
-            if aluno['id'] == aluno_id:
-
-                valid, message = self.valid_data_student(data)
-                if not valid:
-                    return {"erro": message}, 400
-
-                aluno.update(data)
-
-                return {
-                    "message": "Aluno atualizado com sucesso!",
-                    "alunos": self.alunos
-                }, 200
-
-        return {"error": "aluno não encontrado"}, 404
-
-    def delete_aluno(self, aluno_id):
-        for aluno in self.alunos:
-            if aluno['id'] == aluno_id:
-                self.alunos.remove(aluno)
-                return {"message": "Aluno deletado com sucesso!"}, 200
-        return {"error": "aluno não encontrado"}, 404
+    
+    def to_json(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'idade': self.idade,
+            'turma_id': self.turma_id
+        }

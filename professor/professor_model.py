@@ -1,5 +1,4 @@
-from flask import jsonify
-from flask import request
+from flask import jsonify, request
 
 from database.professores import professores
 
