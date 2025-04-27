@@ -1,63 +1,98 @@
 from aluno.aluno_model import Aluno
-from app import db
+from database.db import db
+from sqlalchemy.exc import SQLAlchemyError
 
 class AlunoService:
+    @staticmethod
     def valid_data_student(self, data):
         required_fields = ["nome", "idade"]
         for field in required_fields:
             if field not in data or not data[field]:
                 return False, f"O campo {field} é obrigatório."
-        if not isinstance(data["idade"], int) or data["idade"] <= 0:
-            return False, "O campo 'idade' deve ser um número inteiro positivo."
+            
+        try:
+            idade = int(data["idade"])
+            if idade <= 0:
+                return False, "A idade deve ser um número inteiro positivo."
+        except (ValueError, TypeError):
+            return False, "A idade deve ser um número inteiro válido."
+
         return True, ""
 
     def create_aluno(self, data):
         valid, message = self.valid_data_student(data)
         if not valid:
             return {"erro": message}, 400
+        
+        try:
+            aluno = Aluno(
+                nome = data["nome"],
+                idade = data["idade"],
+                turma_id = data.get("turma_id")
+            )
 
-        aluno = Aluno(
-            nome = data["nome"],
-            idade = data["idade"],
-            turma_id = None
-        )
+            db.session.add(aluno)
+            db.session.commit()
 
-        db.session.add(aluno)
-        db.session.commit()
+            return {
+                "message": "Aluno criado com sucesso!",
+                "aluno": aluno.to_json()
+            }, 201
 
-        return {
-            "message": "Aluno criado com sucesso!",
-            "aluno": aluno
-        }
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"erro": f"Erro ao criar aluno: {str(e)}"}, 500
 
     def get_alunos(self):
-        aluno = Aluno.query.all()
-        return aluno.to_json(), 200
+        try:
+            alunos = Aluno.query.all()
+            return [aluno.to_json() for aluno in alunos], 200
+        except SQLAlchemyError as e:
+            return {"erro": f"Erro ao buscar alunos: {str(e)}"}, 500
 
     def get_aluno(self, aluno_id):
-        aluno = Aluno.query.get_or_404(aluno_id)
-        return aluno.to_json(), 200
+        try:
+            aluno = Aluno.query.get(aluno_id)
+            if not aluno:
+                return {"erro": "Nenhum aluno encontrado"}, 404
+            return aluno.to_json(), 200
+        except SQLAlchemyError as e:
+            return {"erro": f"Erro ao buscar aluno: {str(e)}"}, 500
 
     def update_aluno(self, aluno_id, data):
-        for aluno in self.alunos:
-            if aluno['id'] == aluno_id:
+        try:
+            aluno = Aluno.query.get(aluno_id)
+            if not aluno:
+                return {"erro": "Nenhum aluno encontrado"}, 404
 
-                valid, message = self.valid_data_student(data)
-                if not valid:
-                    return {"erro": message}, 400
+            valid, message = self.valid_data_student(data)
+            if not valid:
+                return {"erro": message}, 400
 
-                aluno.update(data)
+            aluno.nome = data["nome"]
+            aluno.idade = int(data["idade"])
 
-                return {
-                    "message": "Aluno atualizado com sucesso!",
-                    "alunos": self.alunos
-                }, 200
+            if "turma_id" in data:
+                aluno.turma_id = data["turma_id"]
 
-        return {"error": "aluno não encontrado"}, 404
+            db.session.commit()
+
+            return {
+                "message": "Aluno atualizado com sucesso!",
+                "aluno": aluno.to_json()
+            }, 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"erro": f"Erro ao atualizar aluno: {str(e)}"}, 500
 
     def delete_aluno(self, aluno_id):
-        for aluno in self.alunos:
-            if aluno['id'] == aluno_id:
-                self.alunos.remove(aluno)
-                return {"message": "Aluno deletado com sucesso!"}, 200
-        return {"error": "aluno não encontrado"}, 404
+        try:
+            aluno = Aluno.query.get(aluno_id)
+            if not aluno:
+                return {"erro": "Nenhum aluno encontrado"}, 404
+            
+            db.session.delete(aluno)
+            db.session.commit()
+            return {"message": "Aluno deletado com sucesso!"}, 200
+        except SQLAlchemyError as e:
+            return {"erro": f"Erro ao deletar aluno: {str(e)}"}, 500
