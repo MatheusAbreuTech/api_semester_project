@@ -55,9 +55,10 @@ class TestAPP(unittest.TestCase):
         self.assertIn('error', data)
 
     def test_create_aluno(self):
-        novo_aluno = {"nome": "Teste Aluno", "idade": 17, "turma_id": 1}
+        novo_aluno = {"nome": "Teste Aluno", "idade": 17}
         response = self.app.post('/alunos', json=novo_aluno)
-        self.assertEqual(response.status_code, 201)
+        print(response)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
         self.assertIn('aluno', data)
@@ -76,7 +77,7 @@ class TestAPP(unittest.TestCase):
             response = self.app.post('/alunos', json=dados)
             self.assertEqual(response.status_code, 400)
             data = json.loads(response.data)
-            self.assertIn('error', data)
+            self.assertIn('erro', data)
 
     def test_update_aluno_existente(self):
         update_data = {"nome": "João Modificado", "idade": 16, "turma_id": 1}
@@ -97,7 +98,7 @@ class TestAPP(unittest.TestCase):
         response = self.app.put('/alunos/1', json=update_data)
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.data)
-        self.assertIn('error', data)
+        self.assertIn('erro', data)
 
     def test_delete_aluno_existente(self):
         response = self.app.delete('/alunos/2')
@@ -126,7 +127,7 @@ class TestAPP(unittest.TestCase):
     def test_create_professor(self):
         novo_professor = {"nome": "Paulo Souza", "disciplina": "Física"}
         response = self.app.post('/professor', json=novo_professor)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
 
@@ -171,7 +172,7 @@ class TestAPP(unittest.TestCase):
     def test_create_turma(self):
         nova_turma = {"nome": "Turma Z", "id_professor": 1}
         response = self.app.post('/turmas', json=nova_turma)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
 

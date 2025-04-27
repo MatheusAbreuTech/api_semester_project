@@ -11,7 +11,7 @@ aluno_input = alunos_ns.model('AlunoInput', {
     'idade': fields.Integer(required=True, description='Idade do aluno')
 })
 
-@alunos_ns.route('/')
+@alunos_ns.route('/', strict_slashes=False)
 class AlunoListResource(Resource):
     @alunos_ns.doc('list_alunos')
     def get(self):
@@ -23,7 +23,7 @@ class AlunoListResource(Resource):
         data = request.json
         return alunos_model.create_aluno(data)
 
-@alunos_ns.route('/<int:aluno_id>')
+@alunos_ns.route('/<int:aluno_id>', strict_slashes=False)
 class AlunoResource(Resource):
     @alunos_ns.doc('get_aluno')
     @alunos_ns.param('aluno_id', 'O ID do aluno')
