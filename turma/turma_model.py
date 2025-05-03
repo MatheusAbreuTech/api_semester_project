@@ -1,17 +1,9 @@
 from database.db import db
 from dataclasses import dataclass
 
-from database.alunos import alunos
-from database.turmas import turmas
-from database.professores import professores
-
-from database.db import db
-from dataclasses import dataclass
-
 @dataclass
 class Turma(db.Model):
     __tablename__= 'turma'
-
 
     id:int = db.Column(db.Integer, primary_key=True)
     nome: str = db.Column(db.String(100), nullable=False)
@@ -20,33 +12,11 @@ class Turma(db.Model):
     def __init__(self, nome: str):
         self.nome = nome
 
-    def save(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-            return self
-        except Exception as e:
-            db.session.rollback()
-            raise e
-
-    def delete(self):
-        
-        try:
-            db.session.delete(self)
-            db.session.commit()
-            return True    
-        except Exception as e:
-            db.session.rollback()
-            raise e 
-
     def __repr__(self):
-        return f"<Turma {self.nome}>"
+        return f"<Turma id: {self.id}, nome: {self.nome}, professor_id: {self.professor_id}>"
 
     def to_json(self):
         return {'id': self.id,
-                'nome': self.nome
+                'nome': self.nome,
+                'professor_id': self.professor_id
         }
-            
-
-
-    
