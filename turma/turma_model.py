@@ -1,6 +1,12 @@
 from database.db import db
 from dataclasses import dataclass
 
+from database.alunos import alunos
+from database.turmas import turmas
+from database.professores import professores
+
+from database.db import db
+from dataclasses import dataclass
 
 @dataclass
 class Turma(db.Model):

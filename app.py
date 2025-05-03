@@ -1,6 +1,5 @@
 from flask import Flask
 from turma.turma_controller import turmas_blueprint
-from professor.professor_controller import professores_blueprint
 from database.db import db
 
 def create_app():
@@ -10,7 +9,6 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(turmas_blueprint)
-    app.register_blueprint(professores_blueprint)
 
     with app.app_context():
         from swagger.config_swagger import configure_swagger
@@ -20,3 +18,6 @@ def create_app():
     return app
 
 app = create_app()
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
