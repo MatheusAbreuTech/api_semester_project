@@ -1,12 +1,8 @@
 from flask import jsonify
-
-from database.alunos import alunos
-from database.turmas import turmas
 from database.professores import professores
-from professor.professor_model import ProfessorModel
+from professor.professor_model import Professor
 from turma.turma_model import Turma
 from aluno.aluno_model import Aluno
-from professor.professor_model import ProfessorModel
 
 
 class TurmaService:
@@ -129,7 +125,7 @@ class TurmaService:
                 .values(professor_id=professor_id)
             )
 
-            professor=ProfessorModel.query.get(professor_id)
+            professor=Professor.query.get(professor_id)
             if not professor:
                 return jsonify({'error': 'Professor nao encontrado'}), 404
             turma=Turma.query.get(turma_id)

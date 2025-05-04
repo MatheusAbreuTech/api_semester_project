@@ -1,21 +1,17 @@
 from flask import jsonify, request
-from database.professores import professores
+from professor_model import Professor
 
 class ProfessorService:
-    def __init__(self):
-        self.professores = professores
-
     def create_professor(self, data):
-        valid, message = self.valid_data_professor(data)
-        if not valid:
-            return {"erro": message}, 400
+        if "nome" not in data:
+            return {"erro": "O campo 'nome' é obrigatório"}, 400
+        if "disciplina" not in data:
+            return {"erro": "O campo 'disciplina' é obrigatório"}, 400
         
         try:
             professor = Professor(
-                id = data["id"],
                 nome = data["nome"],
                 disciplina = data["disciplina"],
-                turma_id = data["turma_id"]
             )
             
             db.session.add(professor)
@@ -30,7 +26,7 @@ class ProfessorService:
             db.session.rollback()
             return{"erro": f"Erro ao criar professor: {str(e)}"}, 500
 
-    def get_professor(self):
+    def get_professor(self, professor_id):
         try:
             professor = Professor.query.get(professor_id)
             if not professor:
@@ -44,7 +40,7 @@ class ProfessorService:
             professor =  Professor.query.all()
             return [professor.to_json() for professor in professores], 200
         except SQLAlchemyError as e:
-            return {"erro": f"Erro ao buscar professor: {str(e)}"}, 500
+            return {"erro": f"Erro ao buscar professores: {str(e)}"}, 500
 
 
     def update_professor(self,professor_id,data):
@@ -55,9 +51,6 @@ class ProfessorService:
             
             professor.nome = data["nome"]
             professor.disciplina = data["disciplina"]
-            
-            if "turma_id" in data:
-                professor.turma_id = data["turma_id"]
                 
             db.session.commit()
             
