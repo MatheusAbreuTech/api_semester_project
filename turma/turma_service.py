@@ -41,54 +41,55 @@ class TurmaService:
             turma = Turma.query.filter_by(nome=nome).first()
             if turma:
                 return {'error': 'turma ja cadastrada'}, 400
-            
-            
-            
-        
+
             turma = Turma(
                 nome=nome
-
             )
 
             db.session.add(turma)
             db.session.commit()
+            db.session.refresh(turma)
             return {
                 'message': 'turma criada com sucesso',
-                'turma': turma.to_json()
+                'turma': {
+                    'id': turma.id,
+                    'nome': turma.nome
+                }
             }, 201
         except SQLAlchemyError as e:
-            db.session.rollback()
+            # db.session.rollback()
             return {"erro": f"Erro no banco de dados: {str(e)}"}, 500
         except Exception as e:
-            db.session.rollback()
+            # db.session.rollback()
             return {"erro": f"Erro inesperado: {str(e)}"}, 500
         
     def update_turma(self, turma_id, data):
         try:
             turma = Turma.query.get(turma_id)
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
-            for key, value in data.items():
-                setattr(turma, key, value)
+                return {'error': 'turma nao encontrada'}, 404
+            
+            turma.nome=data['nome']
+            
             db.session.commit()
-            return jsonify({
+            return {
                 'message': 'turma atualizada com sucesso',
                 'turma': turma.to_json()
-            }), 200
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Erro ao atualizar turma: {str(e)}'}, 500
+            }, 200
+        except SQLAlchemyError as e:
+            # db.session.rollback()
+            return {"erro": f"Erro ao atualizar professor: {str(e)}"}, 400
 
     def delete_turma(self, turma_id):
         try:
             turma = Turma.query.get(turma_id)
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
+                return {'error': 'turma nao encontrada'}, 404
             db.session.delete(turma)
             db.session.commit()
-            return jsonify({'message': 'turma deletada com sucesso'}), 200
+            return {'message': 'turma deletada com sucesso'}, 200
         except Exception as e:
-            db.session.rollback()
+            # db.session.rollback()
             return {'error': f'Erro ao deletar turma: {str(e)}'}, 500
         
     def add_student(self, turma_id, aluno_id):
@@ -111,7 +112,7 @@ class TurmaService:
             db.session.commit()
             return {'message': 'aluno adicionado a turma com sucesso'}, 200
         except Exception as e:
-            db.session.rollback()
+            # db.session.rollback()
             return {'error': f'Erro ao adicionar aluno a turma: {str(e)}'}, 500
 
             
@@ -119,7 +120,7 @@ class TurmaService:
        try:
             query=(
                update(Aluno)
-               .where(id == aluno_id)
+               .where(Aluno.id == aluno_id)
                .values(turma_id=None)
             )
 
@@ -133,36 +134,49 @@ class TurmaService:
             db.session.commit()
             return{'message': 'Aluno removido com sucesso'}
        except Exception as e:
-            db.session.rollback()
+            # db.session.rollback()
             return {'error': f'Erro ao remover aluno: {str(e)}'}, 500
 
-       
-       
     def add_professor(self, turma_id, professor_id):
         try:
-            query=(
-                update(Turma)
-                .where(id==turma_id)
-                .values(professor_id=professor_id)
-            )
-
             professor=Professor.query.get(professor_id)
             if not professor:
-                return jsonify({'error': 'Professor nao encontrado'}), 404
+                return {'error': 'Professor nao encontrado'}, 404
             turma=Turma.query.get(turma_id)
+            
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
+                return {'error': 'turma nao encontrada'}, 404
             
+            if turma.to_json()['professor_id'] is not None:  # Verifica se o professor ja esta na turma
+                return {'error': 'Já existe um professor na turma'}, 400
+            
+            query = update(Turma).where(Turma.id == turma_id).values(professor_id=professor_id)
             db.session.execute(query)
+            db.session.refresh(turma)
             db.session.commit()
-            return jsonify({'message': 'Professor adicionado a turma com sucesso'}), 200
+            return {'message': 'Professor adicionado a turma com sucesso', 'turma': turma.to_json()}, 200
         except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': f'Erro ao adicionar Professor a turma: {str(e)}'}), 500
+            # db.session.rollback()
+            return {'error': f'Erro ao adicionar Professor a turma: {str(e)}'}, 500
         
+    def remove_professor(self, turma_id, professor_id):
+        try:
+                query=(
+                    update(Turma)
+                    .where(Turma.id == turma_id)
+                    .values(professor_id=None)
+                )
 
-
-
-        
-            
-            
+                aluno=Turma.query.get(professor_id)
+                if not aluno:
+                    return {'error': 'professor nao encontrado'}, 404
+                turma = Turma.query.get(turma_id)
+                if not turma:
+                    return {'error': 'turma nao encontrada'}, 404
+                db.session.execute(query)
+                db.session.refresh(turma)
+                db.session.commit()
+                return{'message': 'Aluno removido com sucesso'}
+        except Exception as e:
+                # db.session.rollback()
+                return {'error': f'Erro ao remover aluno: {str(e)}'}, 500

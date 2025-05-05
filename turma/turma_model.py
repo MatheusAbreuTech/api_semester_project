@@ -7,7 +7,7 @@ class Turma(db.Model):
 
     id:int = db.Column(db.Integer, primary_key=True)
     nome: str = db.Column(db.String(100), nullable=False)
-    professor_id: int = db.Column(db.Integer, db.ForeignKey('professor.id'), nullable=True)
+    professor_id: int = db.Column(db.Integer, db.ForeignKey('professores.id'), nullable=True)
     
     def __init__(self, nome: str):
         self.nome = nome
@@ -17,6 +17,6 @@ class Turma(db.Model):
 
     def to_json(self):
         return {'id': self.id,
-                'nome': self.nome
-                
+                'nome': self.nome,
+                'professor_id': self.professor_id
         }

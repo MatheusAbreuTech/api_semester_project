@@ -37,10 +37,7 @@ class ProfessorListResource(Resource):
             
             response, status_code = professor_service.create_professor(data)
             
-            if status_code == 201:
-                return response, status_code
-            else:
-                return response, status_code
+            return response, status_code
                 
         except Exception as e:
             return {"erro": f"Erro interno no servidor: {str(e)}"}, 500
