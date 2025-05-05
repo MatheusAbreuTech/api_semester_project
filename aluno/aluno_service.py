@@ -3,50 +3,60 @@ from database.db import db
 from sqlalchemy.exc import SQLAlchemyError
 
 class AlunoService:
-    @staticmethod
-    def valid_data_student(self, data):
-        required_fields = ["nome", "idade"]
-        for field in required_fields:
-            if field not in data or not data[field]:
-                return False, f"O campo {field} é obrigatório."
-            
-        try:
-            idade = int(data["idade"])
-            if idade <= 0:
-                return False, "A idade deve ser um número inteiro positivo."
-        except (ValueError, TypeError):
-            return False, "A idade deve ser um número inteiro válido."
-
-        return True, ""
-
     def create_aluno(self, data):
-        valid, message = self.valid_data_student(data)
-        if not valid:
-            return {"erro": message}, 400
-        
         try:
-            aluno = Aluno(
-                nome = data["nome"],
-                idade = data["idade"],
-                turma_id = data.get("turma_id")
-            )
+            if not isinstance(data, dict):
+                return {"erro": "Dados devem ser um objeto JSON"}, 400
+                
+            nome = str(data.get('nome', '')).strip()
+            idade = data.get('idade')
+            turma_id = data.get('turma_id')
 
+            # Validações
+            if len(nome) < 3:
+                return {"erro": "Nome deve ter pelo menos 3 caracteres"}, 400
+                
+            try:
+                idade = int(idade)
+                if idade <= 0:
+                    return {"erro": "Idade deve ser maior que zero"}, 400
+            except (ValueError, TypeError):
+                return {"erro": "Idade deve ser um número válido"}, 400
+
+            # Criação do aluno
+            aluno = Aluno(
+                nome=nome,
+                idade=idade,
+                turma_id=turma_id
+            )
+            
             db.session.add(aluno)
             db.session.commit()
-
+            db.session.refresh(aluno)
+            
             return {
-                "message": "Aluno criado com sucesso!",
-                "aluno": aluno.to_json()
+                "id": aluno.id,
+                "nome": aluno.nome,
+                "idade": aluno.idade,
+                "turma_id": aluno.turma_id
             }, 201
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            return {"erro": f"Erro ao criar aluno: {str(e)}"}, 500
+            return {"erro": f"Erro no banco de dados: {str(e)}"}, 500
+        except Exception as e:
+            db.session.rollback()
+            return {"erro": f"Erro inesperado: {str(e)}"}, 500
 
     def get_alunos(self):
         try:
             alunos = Aluno.query.all()
-            return [aluno.to_json() for aluno in alunos], 200
+            return [{
+                "id": a.id,
+                "nome": a.nome,
+                "idade": a.idade,
+                "turma_id": a.turma_id
+            } for a in alunos], 200
         except SQLAlchemyError as e:
             return {"erro": f"Erro ao buscar alunos: {str(e)}"}, 500
 
@@ -54,8 +64,14 @@ class AlunoService:
         try:
             aluno = Aluno.query.get(aluno_id)
             if not aluno:
-                return {"erro": "Nenhum aluno encontrado"}, 404
-            return aluno.to_json(), 200
+                return {"erro": "Aluno não encontrado"}, 404
+                
+            return {
+                "id": aluno.id,
+                "nome": aluno.nome,
+                "idade": aluno.idade,
+                "turma_id": aluno.turma_id
+            }, 200
         except SQLAlchemyError as e:
             return {"erro": f"Erro ao buscar aluno: {str(e)}"}, 500
 
@@ -63,24 +79,36 @@ class AlunoService:
         try:
             aluno = Aluno.query.get(aluno_id)
             if not aluno:
-                return {"erro": "Nenhum aluno encontrado"}, 404
+                return {"erro": "Aluno não encontrado"}, 404
 
-            valid, message = self.valid_data_student(data)
-            if not valid:
-                return {"erro": message}, 400
+            # Validações
+            nome = str(data.get('nome', '')).strip()
+            idade = data.get('idade')
+            
+            if len(nome) < 3:
+                return {"erro": "Nome deve ter pelo menos 3 caracteres"}, 400
+                
+            try:
+                idade = int(idade)
+                if idade <= 0:
+                    return {"erro": "Idade deve ser maior que zero"}, 400
+            except (ValueError, TypeError):
+                return {"erro": "Idade deve ser um número válido"}, 400
 
-            aluno.nome = data["nome"]
-            aluno.idade = int(data["idade"])
-
-            if "turma_id" in data:
-                aluno.turma_id = data["turma_id"]
-
+            # Atualização
+            aluno.nome = nome
+            aluno.idade = idade
+            aluno.turma_id = data.get('turma_id')
+            
             db.session.commit()
-
+            
             return {
-                "message": "Aluno atualizado com sucesso!",
-                "aluno": aluno.to_json()
+                "id": aluno.id,
+                "nome": aluno.nome,
+                "idade": aluno.idade,
+                "turma_id": aluno.turma_id
             }, 200
+            
         except SQLAlchemyError as e:
             db.session.rollback()
             return {"erro": f"Erro ao atualizar aluno: {str(e)}"}, 500
@@ -89,10 +117,12 @@ class AlunoService:
         try:
             aluno = Aluno.query.get(aluno_id)
             if not aluno:
-                return {"erro": "Nenhum aluno encontrado"}, 404
-            
+                return {"erro": "Aluno não encontrado"}, 404
+                
             db.session.delete(aluno)
             db.session.commit()
-            return {"message": "Aluno deletado com sucesso!"}, 200
+            return "", 204
+            
         except SQLAlchemyError as e:
+            db.session.rollback()
             return {"erro": f"Erro ao deletar aluno: {str(e)}"}, 500
