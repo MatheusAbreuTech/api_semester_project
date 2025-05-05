@@ -4,13 +4,13 @@ from dataclasses import dataclass
 
 @dataclass
 class Professor(db.Model):
-    __tablename__ = 'professor'
+    __tablename__ = 'professores'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    disciplina = db.Column(db.String(100), nullable=False)
 
-    id:int = db.Column(db.Integer, primary_key=True)
-    nome: str = db.Column(db.String(100), nullable=False)
-    disciplina: int = db.Column(db.Integer, nullable=False)
-
-    def __init__(self, nome: str, disciplina: str):
+    def __init__(self, nome, disciplina):
         self.nome = nome
         self.disciplina = disciplina
 
@@ -37,9 +37,9 @@ class Professor(db.Model):
     
     def to_json(self):
         return {
-            'id': self.id,
-            'nome': self.nome,
-            'disciplina': self.disciplina,
+            "id": self.id,
+            "nome": self.nome,
+            "disciplina": self.disciplina
         }
 
 

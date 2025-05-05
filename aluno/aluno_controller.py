@@ -19,51 +19,53 @@ aluno_output = alunos_ns.model('AlunoOutput', {
 
 aluno_service = AlunoService()
 
-@alunos_ns.route('/', strict_slashes=False)
+@alunos_ns.route('/')
 class AlunoListResource(Resource):
     @alunos_ns.doc('list_alunos')
     @alunos_ns.marshal_list_with(aluno_output)
     def get(self):
-        alunos, status_code = aluno_service.get_alunos()
-        return alunos, status_code
+        response, status_code = aluno_service.get_alunos()
+        return response, status_code
 
     @alunos_ns.doc('create_aluno')
     @alunos_ns.expect(aluno_input)
-    @alunos_ns.marshal_with(aluno_output, code=201)
-    @alunos_ns.response(400, 'Erro ao criar aluno')
-    @alunos_ns.response(500, 'Erro interno do servidor')
+    @alunos_ns.response(201, 'Success', aluno_output)
+    @alunos_ns.response(400, 'Validation Error')
+    @alunos_ns.response(500, 'Internal Error')
     def post(self):
-        data = request.get_json()
-        response, status_code = aluno_service.create_aluno(data)
-        return response, status_code
+        try:
+            data = request.get_json()
+            if not data:
+                return {"erro": "Dados não fornecidos"}, 400
+                
+            response, status_code = aluno_service.create_aluno(data)
+            return response, status_code
+            
+        except Exception as e:
+            return {"erro": f"Erro no controller: {str(e)}"}, 500
 
-@alunos_ns.route('/<int:aluno_id>', strict_slashes=False)
+@alunos_ns.route('/<int:aluno_id>')
 class AlunoResource(Resource):
     @alunos_ns.doc('get_aluno')
     @alunos_ns.marshal_with(aluno_output)
-    @alunos_ns.response(404, 'Nenhum aluno encontrado')
-    @alunos_ns.param('aluno_id', 'O ID do aluno')
+    @alunos_ns.response(404, 'Aluno não encontrado')
     def get(self, aluno_id):
-        aluno, status_code = aluno_service.get_aluno(aluno_id)
-        return aluno, status_code
+        response, status_code = aluno_service.get_aluno(aluno_id)
+        return response, status_code
     
     @alunos_ns.doc('update_aluno')
+    @alunos_ns.expect(aluno_input)
     @alunos_ns.marshal_with(aluno_output)
     @alunos_ns.response(400, 'Dados inválidos')
-    @alunos_ns.response(404, 'Nenhum aluno encontrado')
-    @alunos_ns.response(500, 'Erro interno do servidor')
-    @alunos_ns.param('aluno_id', 'O ID do aluno')
-    @alunos_ns.expect(aluno_input)
+    @alunos_ns.response(404, 'Aluno não encontrado')
     def put(self, aluno_id):
         data = request.get_json()
         response, status_code = aluno_service.update_aluno(aluno_id, data)
         return response, status_code
 
     @alunos_ns.doc('delete_aluno')
-    @alunos_ns.response(204, 'Aluno deletado com sucesso')
-    @alunos_ns.response(404, 'Nenhum aluno encontrado')
-    @alunos_ns.response(500, 'Erro interno do servidor')
-    @alunos_ns.param('aluno_id', 'O ID do aluno')
+    @alunos_ns.response(204, 'Aluno deletado')
+    @alunos_ns.response(404, 'Aluno não encontrado')
     def delete(self, aluno_id):
         response, status_code = aluno_service.delete_aluno(aluno_id)
         return response, status_code
