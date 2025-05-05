@@ -5,7 +5,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: meubanco
     ports:
-      - "3306:3306"
+      - "3305:3305"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:

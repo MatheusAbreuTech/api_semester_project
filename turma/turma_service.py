@@ -167,8 +167,8 @@ class TurmaService:
                     .values(professor_id=None)
                 )
 
-                aluno=Turma.query.get(professor_id)
-                if not aluno:
+                professor=Professor.query.get(professor_id)
+                if not professor:
                     return {'error': 'professor nao encontrado'}, 404
                 turma = Turma.query.get(turma_id)
                 if not turma:
@@ -176,7 +176,7 @@ class TurmaService:
                 db.session.execute(query)
                 db.session.refresh(turma)
                 db.session.commit()
-                return{'message': 'Aluno removido com sucesso'}
+                return{'message': 'Professor removido com sucesso'},200
         except Exception as e:
                 # db.session.rollback()
                 return {'error': f'Erro ao remover aluno: {str(e)}'}, 500
