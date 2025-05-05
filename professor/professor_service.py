@@ -77,7 +77,7 @@ class ProfessorService:
             
         except SQLAlchemyError as e:
             db.session.rollback()
-            return {"erro": f"Erro ao atualizar professor: {str(e)}"}, 500
+            return {"erro": f"Erro ao atualizar professor: {str(e)}"},400
             
     def delete_professor(self, professor_id):
         try:

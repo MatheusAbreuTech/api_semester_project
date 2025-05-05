@@ -1,5 +1,4 @@
 from flask import Flask
-from turma.turma_controller import turmas_blueprint
 from database.db import db
 
 def create_app():
@@ -8,7 +7,7 @@ def create_app():
 
     db.init_app(app)
 
-    app.register_blueprint(turmas_blueprint)
+    
 
     with app.app_context():
         from swagger.config_swagger import configure_swagger

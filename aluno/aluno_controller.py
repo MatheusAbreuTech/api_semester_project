@@ -7,7 +7,6 @@ alunos_ns = Namespace('alunos', description='Operações relacionadas aos alunos
 aluno_input = alunos_ns.model('AlunoInput', {
     'nome': fields.String(required=True, description='Nome do aluno', min_length=3),
     'idade': fields.Integer(required=True, description='Idade do aluno', min=1),
-    'turma_id': fields.Integer(required=False, description='ID da turma')
 })
 
 aluno_output = alunos_ns.model('AlunoOutput', {

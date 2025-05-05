@@ -37,15 +37,12 @@ class ProfessorListResource(Resource):
             
             response, status_code = professor_service.create_professor(data)
             
-            if status_code == 201:
-                return response, status_code
-            else:
-                return response, status_code
+            return response, status_code
                 
         except Exception as e:
             return {"erro": f"Erro interno no servidor: {str(e)}"}, 500
 
-@professores_ns.route('/<int:professor_id>')
+@professores_ns.route('/<int:professor_id>', strict_slashes=False)
 class ProfessorResource(Resource):
     @professores_ns.doc('get_professor')
     @professores_ns.marshal_with(professor_output)
