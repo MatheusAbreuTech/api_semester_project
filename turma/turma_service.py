@@ -93,26 +93,32 @@ class TurmaService:
             return {'error': f'Erro ao deletar turma: {str(e)}'}, 500
         
     def add_student(self, turma_id, aluno_id):
+        print(f"turma_id: {turma_id}")
+        print(f"aluno_id: {aluno_id}" )
         try:
-            query=(
-               update(Aluno)
-               .where(id == aluno_id)
-               .values(turma_id=turma_id)
-            )
-
             aluno=Aluno.query.get(aluno_id)
             if not aluno:
                 return {'error': 'aluno nao encontrado'}, 404
+            print(f"aluno: {aluno}")
             turma = Turma.query.get(turma_id)
+
             if not turma:
                 return {'error': 'turma nao encontrada'}, 404
-            if turma_id in aluno.to_json()['turma_id']:  # Verifica se o aluno ja esta na turma
-                return {'error': 'aluno ja esta na turma'}, 400
+            print(f"turma: {turma}")
+
+            if aluno.turma_id is not None:  # Verifica se o aluno ja esta na turma
+                return {'error': f'aluno ja esta em uma turma: {aluno.turma_id}'}, 400
+            
+            query=(
+               update(Aluno)
+               .where(Aluno.id == aluno_id)
+               .values(turma_id=turma_id)
+            )
             db.session.execute(query)
             db.session.commit()
             return {'message': 'aluno adicionado a turma com sucesso'}, 200
         except Exception as e:
-            # db.session.rollback()
+            db.session.rollback()
             return {'error': f'Erro ao adicionar aluno a turma: {str(e)}'}, 500
 
             
@@ -132,7 +138,7 @@ class TurmaService:
                 return {'error': 'turma nao encontrada'}, 404
             db.session.execute(query)
             db.session.commit()
-            return{'message': 'Aluno removido com sucesso'}
+            return{'message': 'Aluno removido com sucesso'}, 200
        except Exception as e:
             # db.session.rollback()
             return {'error': f'Erro ao remover aluno: {str(e)}'}, 500

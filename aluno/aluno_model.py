@@ -34,7 +34,7 @@ class Aluno(db.Model):
             raise e
 
     def __repr__(self):
-        return f"<Aluno {self.nome}, Idade: {self.idade}, Turma: {self.turma_id}>"
+        return f"<Aluno id: {self.id}, nome: {self.nome}, idade: {self.idade}, turma_id: {self.turma_id}>"
     
     def to_json(self):
         return {

@@ -13,7 +13,7 @@ aluno_output = alunos_ns.model('AlunoOutput', {
     'id': fields.Integer(required=True, description='ID do aluno'),
     'nome': fields.String(required=True, description='Nome do aluno'),
     'idade': fields.Integer(required=True, description='Idade do aluno'),
-    'turma_id': fields.Boolean(required=False, description='ID da turma')
+    'turma_id': fields.Integer(required=False, description='ID da turma')
 })
 
 aluno_service = AlunoService()

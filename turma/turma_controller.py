@@ -95,8 +95,6 @@ class TurmaAlunoResource(Resource):
     @turmas_ns.doc('add_student')
     @turmas_ns.response(200, 'Aluno adicionado com sucesso')
     @turmas_ns.response(404, 'Nenhuma turma ou aluno encontrado')
-    @turmas_ns.param('turma_id', 'O ID da turma')
-    @turmas_ns.param('aluno_id', 'O ID do aluno')
     def post(self, turma_id, aluno_id):
         response, status_code = turmas_service.add_student(turma_id, aluno_id)
         return response, status_code
@@ -104,9 +102,8 @@ class TurmaAlunoResource(Resource):
     @turmas_ns.doc('remove_student')
     @turmas_ns.response(200, 'Aluno removido com sucesso')
     @turmas_ns.response(404, 'Nenhuma turma ou aluno encontrado')
-    @turmas_ns.param('turma_id', 'O ID da turma')
-    def delete(self, turma_id):
-        response, status_code = turmas_service.remove_student(turma_id)
+    def delete(self, turma_id, aluno_id):
+        response, status_code = turmas_service.remove_student(turma_id, aluno_id)
         return response, status_code
 
 
