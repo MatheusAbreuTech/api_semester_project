@@ -34,9 +34,16 @@ class TurmasList(Resource):
     @turmas_ns.response(400, 'Erro ao criar turma')
     @turmas_ns.response(500, 'Erro interno do servidor')
     def post(self):
-        data = request.get_json()
-        response, status_code = turmas_service.create_turma(data)
-        return response, status_code
+        try:
+            data = request.get_json()
+            if not data:
+                return {"erro": "Dados não fornecidos"}, 400
+
+            response, status_code = turmas_service.create_turma(data)
+            return response, status_code
+
+        except Exception as e:
+            return {"erro": f"Erro no controller: {str(e)}"}, 500
 
 @turmas_ns.route('/turmas/<int:turma_id>', strict_slashes=False)
 class TurmaResource(Resource):
