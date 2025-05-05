@@ -41,7 +41,7 @@ class ProfessorListResource(Resource):
         return response, status_code
 
 @professores_ns.route('/<int:professor_id>', strict_slashes=False)
-class AlunoResource(Resource):
+class ProfessorResource(Resource):
     @professores_ns.doc('get_professor')
     @professores_ns.marshal_with(professor_output)
     @professores_ns.response(404, 'Nenhum professor encontrado')

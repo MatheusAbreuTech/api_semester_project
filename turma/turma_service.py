@@ -3,44 +3,64 @@ from database.professores import professores
 from professor.professor_model import Professor
 from turma.turma_model import Turma
 from aluno.aluno_model import Aluno
-
-
+from database.db import db
+from sqlalchemy.exc import SQLAlchemyError
 class TurmaService:
     def valid_data_class(self, data):
         if 'nome' not in data:
             return False, 'nome é um campo obrigatório'
+        return True, ''
         
     def get_turmas(self):
         try:
             turmas=Turma.query.all()
             return [turma.to_json() for turma in turmas], 200
         except Exception as e:
-            return jsonify({"error":f"Erro ao buscar turmas: {str(e)}"}), 500
+            return {"error":f"Erro ao buscar turmas: {str(e)}"}, 500
 
     def get_turma(self, turma_id):
         try:
             turma = Turma.query.get(turma_id)
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
+                return {'error': 'turma nao encontrada'}, 404
             return turma.to_json(), 200
         except Exception as e:
-            return jsonify({"error":f"Erro ao buscar turma: {str(e)}"}), 500
+            return {"error":f"Erro ao buscar turma: {str(e)}"}, 500
         
     def create_turma(self, data):
-        valid, msg = self.valid_data_class(data)
-        if not valid:
-            return jsonify({'error': msg}), 400
+        
         try:
-            turma = Turma(**data)
+            if not isinstance(data, dict):
+                return {'error': 'Dados inválidos'}, 400 
+            
+            nome=data.get('nome')
+            if not nome:
+                return {'error': 'O campo nome é obrigatório'}, 400
+            
+            turma = Turma.query.filter_by(nome=nome).first()
+            if turma:
+                return {'error': 'turma ja cadastrada'}, 400
+            
+            
+            
+        
+            turma = Turma(
+                nome=nome
+
+            )
+
             db.session.add(turma)
             db.session.commit()
-            return jsonify({
+            return {
                 'message': 'turma criada com sucesso',
                 'turma': turma.to_json()
-            }), 201
+            }, 201
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"erro": f"Erro no banco de dados: {str(e)}"}, 500
         except Exception as e:
             db.session.rollback()
-            return jsonify({'error': f'Erro ao criar turma: {str(e)}'}), 500
+            return {"erro": f"Erro inesperado: {str(e)}"}, 500
         
     def update_turma(self, turma_id, data):
         try:
@@ -56,7 +76,7 @@ class TurmaService:
             }), 200
         except Exception as e:
             db.session.rollback()
-            return jsonify({'error': f'Erro ao atualizar turma: {str(e)}'}), 500
+            return {'error': f'Erro ao atualizar turma: {str(e)}'}, 500
 
     def delete_turma(self, turma_id):
         try:
@@ -68,7 +88,7 @@ class TurmaService:
             return jsonify({'message': 'turma deletada com sucesso'}), 200
         except Exception as e:
             db.session.rollback()
-            return jsonify({'error': f'Erro ao deletar turma: {str(e)}'}), 500
+            return {'error': f'Erro ao deletar turma: {str(e)}'}, 500
         
     def add_student(self, turma_id, aluno_id):
         try:
@@ -80,18 +100,18 @@ class TurmaService:
 
             aluno=Aluno.query.get(aluno_id)
             if not aluno:
-                return jsonify({'error': 'aluno nao encontrado'}), 404
+                return {'error': 'aluno nao encontrado'}, 404
             turma = Turma.query.get(turma_id)
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
+                return {'error': 'turma nao encontrada'}, 404
             if turma_id in aluno.to_json()['turma_id']:  # Verifica se o aluno ja esta na turma
-                return jsonify({'error': 'aluno ja esta na turma'}), 400
+                return {'error': 'aluno ja esta na turma'}, 400
             db.session.execute(query)
             db.session.commit()
-            return jsonify({'message': 'aluno adicionado a turma com sucesso'}), 200
+            return {'message': 'aluno adicionado a turma com sucesso'}, 200
         except Exception as e:
             db.session.rollback()
-            return jsonify({'error': f'Erro ao adicionar aluno a turma: {str(e)}'}), 500
+            return {'error': f'Erro ao adicionar aluno a turma: {str(e)}'}, 500
 
             
     def remove_student(self, turma_id, aluno_id):
@@ -104,16 +124,16 @@ class TurmaService:
 
             aluno=Aluno.query.get(aluno_id)
             if not aluno:
-                return jsonify({'error': 'aluno nao encontrado'}), 404
+                return {'error': 'aluno nao encontrado'}, 404
             turma = Turma.query.get(turma_id)
             if not turma:
-                return jsonify({'error': 'turma nao encontrada'}), 404
+                return {'error': 'turma nao encontrada'}, 404
             db.session.execute(query)
             db.session.commit()
-            return({'message': 'Aluno removido com sucesso'})
+            return{'message': 'Aluno removido com sucesso'}
        except Exception as e:
             db.session.rollback()
-            return jsonify({'error': f'Erro ao remover aluno: {str(e)}'}), 500
+            return {'error': f'Erro ao remover aluno: {str(e)}'}, 500
 
        
        

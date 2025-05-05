@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from professor_model import Professor
+from professor.professor_model import Professor
 
 class ProfessorService:
     def create_professor(self, data):
