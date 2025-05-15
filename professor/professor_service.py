@@ -11,16 +11,20 @@ class ProfessorService:
 
             nome = data.get('nome', '').strip()
             disciplina = data.get('disciplina', '').strip()
+            idade=data.get('idade', '').strip()
 
             if len(nome) < 3:
                 return {"erro": "Nome deve ter pelo menos 3 caracteres"}, 400
                 
             if len(disciplina) < 1:
                 return {"erro": "Disciplina é obrigatória"}, 400
+            if len(idade)<2:
+                return{"erro":"Tu num é muito jovem pra dar aula?"}
             
             professor = Professor(
                 nome=nome,
-                disciplina=disciplina
+                disciplina=disciplina,
+                idade=idade
             )
             
             db.session.add(professor)
@@ -30,7 +34,8 @@ class ProfessorService:
             return {
                 "id": professor.id,
                 "nome": professor.nome,
-                "disciplina": professor.disciplina
+                "disciplina": professor.disciplina,
+                "idade":professor.idade
             }, 201
 
         except SQLAlchemyError as e:
@@ -57,7 +62,7 @@ class ProfessorService:
             return {"erro": f"Erro ao buscar professores: {str(e)}"}, 500
 
     def update_professor(self, professor_id, data):
-        if "nome" not in data or "disciplina" not in data:
+        if "nome" not in data or "disciplina" not in data or "idade":
             return {"erro": "Todos os campos são obrigatórios"}, 400
             
         try:
@@ -67,6 +72,7 @@ class ProfessorService:
             
             professor.nome = data["nome"]
             professor.disciplina = data["disciplina"]
+            professor.idade=data["idade"]
                 
             db.session.commit()
             

@@ -7,13 +7,15 @@ professor_service = ProfessorService()
 
 professor_input = professores_ns.model('ProfessorInput', {
     'nome': fields.String(required=True, description='Nome do professor', min_length=3),
-    'disciplina': fields.String(required=True, description='Disciplina', min_length=1)
+    'disciplina': fields.String(required=True, description='Disciplina', min_length=1),
+    'idade':fields.Integer(required=True, description='idade',min_length=2)
 })
 
 professor_output = professores_ns.model('ProfessorOutput', {
     'id': fields.Integer(required=True, description='ID do professor'),
     'nome': fields.String(required=True, description='Nome do professor'),
-    'disciplina': fields.String(required=True, description='Disciplina')
+    'disciplina': fields.String(required=True, description='Disciplina'),
+    'idade':fields.Integer(required=True, description='idade')
 })
 
 @professores_ns.route('/')

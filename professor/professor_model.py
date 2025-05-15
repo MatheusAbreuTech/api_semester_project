@@ -9,10 +9,14 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     disciplina = db.Column(db.String(100), nullable=False)
+    idade = db.Column(db.Integer(100,nullable=False))
+    observacoes=db.Column(db.String(250), nullable=True)
 
-    def __init__(self, nome, disciplina):
+    def __init__(self, nome, disciplina,idade,observacoes):
         self.nome = nome
         self.disciplina = disciplina
+        self.idade=idade
+        self.observacoes=observacoes
 
     def save(self):
         try:
@@ -33,13 +37,15 @@ class Professor(db.Model):
             raise e
 
     def __repr__(self):
-        return f"<Professor {self.nome}, Nome: {self.nome}, Disciplina: {self.disciplina}>"
+        return f"<Professor {self.nome}, Nome: {self.nome}, Disciplina: {self.disciplina}, Idade:{self.idade}, Obs:{self.observacoes}>"
     
     def to_json(self):
         return {
             "id": self.id,
             "nome": self.nome,
-            "disciplina": self.disciplina
+            "disciplina": self.disciplina,
+            "idade": self.idade,
+            "obs":self.observacoes
         }
 
 
