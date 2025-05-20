@@ -9,7 +9,7 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     disciplina = db.Column(db.String(100), nullable=False)
-    idade = db.Column(db.Integer(100,nullable=False))
+    idade = db.Column(db.Integer, nullable=False)
     observacoes=db.Column(db.String(250), nullable=True)
 
     def __init__(self, nome, disciplina,idade,observacoes):

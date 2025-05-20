@@ -1,6 +1,5 @@
 from database.db import db
 from dataclasses import dataclass
-from datetime import date
 
 @dataclass
 class Aluno(db.Model):
@@ -10,12 +9,12 @@ class Aluno(db.Model):
     nome: str = db.Column(db.String(100), nullable=False)
     idade: int = db.Column(db.Integer, nullable=False)
     turma_id: int = db.Column(db.Integer, db.ForeignKey('turmas.id'), nullable=True)
-    data_nasc: date = db.Column(db.Date, nullable=False)
+    data_nasc: str = db.Column(db.Date, nullable=False)
     nota_semestre1: float=db.Column(db.Float,nullable=False)
     nota_semestre2: float=db.Column(db.Float,nullable=False) 
     media_final: float=db.Column(db.Float,nullable=False)    
 
-    def __init__(self, nome: str, idade: int, turma_id: int = None, data_nasc:date, nota_semestre1:float, nota_semestre2:float):
+    def __init__(self, nome: str, idade: int, turma_id: int = None, data_nasc = "", nota_semestre1:float = 0, nota_semestre2:float=0):
         self.nome = nome
         self.idade = idade
         self.turma_id = turma_id
