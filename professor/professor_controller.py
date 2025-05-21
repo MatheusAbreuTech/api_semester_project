@@ -7,8 +7,9 @@ professor_service = ProfessorService()
 
 professor_input = professores_ns.model('ProfessorInput', {
     'nome': fields.String(required=True, description='Nome do professor', min_length=3),
-    'disciplina': fields.String(required=True, description='Disciplina', min_length=1),
-    'idade':fields.Integer(required=True, description='idade',min_length=2)
+    'materia': fields.String(required=True, description='Matéria que o professor leciona', min_length=1),
+    'idade':fields.Integer(required=True, description='idade'),
+    'observacoes':fields.String(required=False, description='observações sobre o professor')
 })
 
 professor_output = professores_ns.model('ProfessorOutput', {
@@ -56,8 +57,8 @@ class ProfessorResource(Resource):
     
     @professores_ns.doc('update_professor')
     @professores_ns.expect(professor_input)
-    @professores_ns.marshal_with(professor_output)
     @professores_ns.response(400, 'Dados inválidos')
+    @professores_ns.response(200, 'Success', professor_output)
     @professores_ns.response(404, 'Nenhum professor encontrado')
     @professores_ns.response(500, 'Erro interno do servidor')
     def put(self, professor_id):

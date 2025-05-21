@@ -10,21 +10,22 @@ class ProfessorService:
                 return {"erro": "Formato de dados inválido"}, 400
 
             nome = data.get('nome', '').strip()
-            disciplina = data.get('disciplina', '').strip()
-            idade=data.get('idade', '').strip()
+            materia = data.get('materia', '').strip()
+            idade=data.get('idade')
+            observacoes=data.get('observacoes', '').strip()
 
             if len(nome) < 3:
                 return {"erro": "Nome deve ter pelo menos 3 caracteres"}, 400
-                
-            if len(disciplina) < 1:
+            if len(materia) < 1:
                 return {"erro": "Disciplina é obrigatória"}, 400
-            if len(idade)<2:
-                return{"erro":"Tu num é muito jovem pra dar aula?"}
+            if idade < 18:
+                return{"erro":"Tu num é muito jovem pra dar aula?"}, 400
             
             professor = Professor(
                 nome=nome,
-                disciplina=disciplina,
-                idade=idade
+                materia=materia,
+                idade=idade,
+                observacoes=observacoes
             )
             
             db.session.add(professor)
@@ -34,8 +35,9 @@ class ProfessorService:
             return {
                 "id": professor.id,
                 "nome": professor.nome,
-                "disciplina": professor.disciplina,
-                "idade":professor.idade
+                "materia": professor.materia,
+                "idade":professor.idade,
+                "observacoes":professor.observacoes
             }, 201
 
         except SQLAlchemyError as e:
@@ -62,7 +64,8 @@ class ProfessorService:
             return {"erro": f"Erro ao buscar professores: {str(e)}"}, 500
 
     def update_professor(self, professor_id, data):
-        if "nome" not in data or "disciplina" not in data or "idade":
+        print(data)
+        if "nome" not in data or "materia" not in data or "idade" not in data:
             return {"erro": "Todos os campos são obrigatórios"}, 400
             
         try:
@@ -71,8 +74,9 @@ class ProfessorService:
                 return {"erro": "Nenhum professor encontrado"}, 404
             
             professor.nome = data["nome"]
-            professor.disciplina = data["disciplina"]
+            professor.materia = data["materia"]
             professor.idade=data["idade"]
+            professor.observacoes=data["observacoes"]
                 
             db.session.commit()
             
@@ -84,6 +88,9 @@ class ProfessorService:
         except SQLAlchemyError as e:
             db.session.rollback()
             return {"erro": f"Erro ao atualizar professor: {str(e)}"},400
+        except Exception as e:
+            db.session.rollback()
+            return {"erro": "Erro interno ao processar a requisição"}, 500
             
     def delete_professor(self, professor_id):
         try:
