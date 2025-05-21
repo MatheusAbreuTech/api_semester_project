@@ -15,7 +15,7 @@ professor_input = professores_ns.model('ProfessorInput', {
 professor_output = professores_ns.model('ProfessorOutput', {
     'id': fields.Integer(required=True, description='ID do professor'),
     'nome': fields.String(required=True, description='Nome do professor'),
-    'disciplina': fields.String(required=True, description='Disciplina'),
+    'materia': fields.String(required=True, description='Matéria que o professor leciona'),
     'idade':fields.Integer(required=True, description='idade')
 })
 
