@@ -10,7 +10,7 @@ class Turma(db.Model):
     professor_id: int = db.Column(db.Integer, db.ForeignKey('professores.id'), nullable=True)
     ativo: bool = db.Column(db.Boolean, nullable=False, default=True)
 
-    def __init__(self, descricao: str, professor_id: int = None, ativo: bool = True ):
+    def __init__(self, descricao: str, professor_id: int = None,     ativo: bool = True ):
         self.descricao = descricao
         self.ativo = ativo
         self.professor_id = professor_id

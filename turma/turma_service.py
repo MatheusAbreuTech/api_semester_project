@@ -8,8 +8,10 @@ from database.db import db
 from sqlalchemy.exc import SQLAlchemyError
 class TurmaService:
     def valid_data_class(self, data):
-        if 'nome' not in data:
-            return False, 'nome é um campo obrigatório'
+        if 'descricao' not in data:
+            return False, 'descricao é um campo obrigatório'
+        elif 'ativo' not in data:
+            return False,  'Disponibilidade da turma é um campo obrigatorio'
         return True, ''
         
     def get_turmas(self):
@@ -40,7 +42,7 @@ class TurmaService:
             if professor_id and not Professor.query.get(professor_id):
                 return {'error': 'professor nao encontrado'}, 404
             
-            turma = Turma.query.filter_by(nome=nome).first()
+            turma = Turma.query.filter_by(descricao=descricao).first()
             if turma:
                 return {'error': 'turma ja cadastrada'}, 400
 
@@ -72,6 +74,9 @@ class TurmaService:
             
             if 'descricao' in data:
                 turma.descricao = data['descricao']
+
+            if 'ativo' in data:
+                turma.ativo = data['ativo']    
 
             if 'professor_id' in data:
                 if data['professor_id'] and not Professor.query.get(data['professor_id']):

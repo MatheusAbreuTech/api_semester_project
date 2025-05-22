@@ -14,13 +14,14 @@ class Aluno(db.Model):
     nota_semestre2: float=db.Column(db.Float,nullable=False) 
     media_final: float=db.Column(db.Float,nullable=False)    
 
-    def __init__(self, nome: str, idade: int, turma_id: int = None, data_nasc = "", nota_semestre1:float = 0, nota_semestre2:float=0):
+    def __init__(self, nome: str, idade: int, turma_id: int = None, data_nasc = "", nota_semestre1:float = 0, nota_semestre2:float=0, media_final:float = 0):
         self.nome = nome
         self.idade = idade
         self.turma_id = turma_id
         self.data_nasc=data_nasc
         self.nota_semestre1=nota_semestre1
         self.nota_semestre2=nota_semestre2
+        self.media_final=media_final
 
 
     def save(self):

@@ -8,14 +8,17 @@ turmas_service = TurmaService()
 turmas_ns = Namespace('turmas', description='Operações relacionadas às turmas')
 
 turma_input = turmas_ns.model('TurmaInput', {
-    'nome': fields.String(required=True, description='Nome da turma', min_length=3),
+    'descricao': fields.String(required=True, description='Descricao da turma'),
+    'ativo':fields.Boolean(required=True, description='Disponibilidade da turma')
     
 })
 
 turma_output = turmas_ns.model('TurmaOutput', {
     'id': fields.Integer(required=True, description='Id da turma'),
-    'nome': fields.String(required=True, description='Nome da turma'),
-    "professor_id": fields.Integer(required=False, description='Id do professor')
+    "professor_id": fields.Integer(required=False, description='Id do professor'),
+    "ativo":fields.Boolean(required=True, description='Disponibilidade da turma'),
+    'descricao': fields.String(required=True, description='Descricao da turma'),
+
 })
 
 turmas_service= TurmaService()
@@ -31,7 +34,7 @@ class TurmasList(Resource):
     @turmas_ns.doc('create_turma')
     @turmas_ns.expect(turma_input)
     @turmas_ns.response(201, 'Success', turma_output)
-    @turmas_ns.response(400, 'Erro ao criar turma')
+    @turmas_ns.response(400, 'Erro ao criar tur ma')
     @turmas_ns.response(500, 'Erro interno do servidor')
     def post(self):
         try:

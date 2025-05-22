@@ -1,19 +1,26 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from aluno.aluno_service import AlunoService
+from datetime import date
 
 alunos_ns = Namespace('alunos', description='Operações relacionadas aos alunos')
 
 aluno_input = alunos_ns.model('AlunoInput', {
     'nome': fields.String(required=True, description='Nome do aluno', min_length=3),
-    'idade': fields.Integer(required=True, description='Idade do aluno', min=1),
+    'data_nasc': fields.String(required=True, description='Data de nascimento no formato YYYY-MM-DD', example='2000-01-01'),
+    'nota_semestre1': fields.Float(required=True, description='Nota Primeiro semestre'),
+    'nota_semestre2': fields.Float(required=False, description='Nota Segundo semestre')
 })
 
 aluno_output = alunos_ns.model('AlunoOutput', {
     'id': fields.Integer(required=True, description='ID do aluno'),
     'nome': fields.String(required=True, description='Nome do aluno'),
     'idade': fields.Integer(required=True, description='Idade do aluno'),
-    'turma_id': fields.Integer(required=False, description='ID da turma')
+    'data_nasc': fields.String(required=True, description='Data de nascimento no formato YYYY-MM-DD', example='2000-01-01'),
+    'turma_id': fields.Integer(required=False, description='ID da turma'),
+    'nota_semestre1': fields.Float(required=True, description='Nota Primeiro semestre'),
+    'nota_semestre2': fields.Float(required=True, description='Nota Segundo semestre'),
+    'media_final': fields.Float(required=False, description='Media final')
 })
 
 aluno_service = AlunoService()
