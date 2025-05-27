@@ -7,7 +7,7 @@ professor_service = ProfessorService()
 
 professor_input = professores_ns.model('ProfessorInput', {
     'nome': fields.String(required=True, description='Nome do professor', min_length=3),
-    'materia': fields.String(required=True, description='Matéria que o professor leciona', min_length=1),
+    'id_disciplina': fields.Integer(required=True, description='Matéria que o professor leciona'),
     'idade':fields.Integer(required=True, description='idade'),
     'observacoes':fields.String(required=False, description='observações sobre o professor')
 })
@@ -16,6 +16,7 @@ professor_output = professores_ns.model('ProfessorOutput', {
     'id': fields.Integer(required=True, description='ID do professor'),
     'nome': fields.String(required=True, description='Nome do professor'),
     'materia': fields.String(required=True, description='Matéria que o professor leciona'),
+    'id_disciplina': fields.String(required=True, description='ID da matéria que o professor leciona'),
     'idade':fields.Integer(required=True, description='idade')
 })
 

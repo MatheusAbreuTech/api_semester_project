@@ -5,19 +5,21 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: meubanco
     ports:
-      - "3305:3305"
+      - '3305:3305'
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 5s
       timeout: 10s
       retries: 5
+    networks:
+      - api-network
 
   web:
     build: .
     ports:
-      - "5000:5000"
+      - '5000:5000'
     depends_on:
       db:
         condition: service_healthy
@@ -29,6 +31,12 @@ services:
       - DB_NAME=meubanco
     volumes:
       - .:/app
+    networks:
+      - api-network
 
 volumes:
   mysql_data:
+
+networks:
+  api-network:
+    external: true
